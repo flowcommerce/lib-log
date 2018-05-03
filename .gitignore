@@ -1,0 +1,13 @@
+*.log
+*.swo
+*.swp
+*.tmp
+.DS_STORE
+.idea/
+.ivy2
+/logs/
+/project/project/
+/project/target/
+/RUNNING_PID
+logs/
+target/

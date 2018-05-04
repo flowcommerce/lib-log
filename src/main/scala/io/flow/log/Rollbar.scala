@@ -8,8 +8,7 @@ import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import io.flow.play.util.{Config, FlowEnvironment}
-import javax.inject
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import org.slf4j.LoggerFactory
 import play.api._
@@ -32,7 +31,7 @@ class RollbarModule extends AbstractModule with ScalaModule {
   *
   * Returns an optional Rollbar instance so a key isn't required in test and development mode.
   */
-@inject.Singleton
+@Singleton
 class RollbarProvider @Inject() (
   config: Config
 ) extends Provider[Option[Rollbar]] {
@@ -56,7 +55,7 @@ class RollbarProvider @Inject() (
 }
 
 // Allows RollbarLogger to be injected directly instead of creating one with the factory
-@inject.Singleton
+@Singleton
 class RollbarLoggerProvider @Inject() (
   factory: RollbarFactory
 ) extends Provider[RollbarLogger] {
@@ -65,7 +64,7 @@ class RollbarLoggerProvider @Inject() (
 
 // Necessary evil to allow us to copy instances of RollbarLogger, letting us have
 // nice methods like `withKeyValue`
-@inject.Singleton
+@Singleton
 class RollbarFactory @Inject()(
   rollbarProvider: Provider[Option[Rollbar]],
   config: io.flow.play.util.Config
@@ -123,13 +122,19 @@ case class RollbarLogger @AssistedInject() (
   // Used to preserve any existing messages tied to Sumo alerts until fully migrated to Rollbar
   def legacyMessage(value: String): RollbarLogger = this.copy(legacyMessage = Some(value))
 
-  override def warn(message: => String)(implicit mc: MarkerContext): Unit = warn(message, null)
   override def debug(message: => String)(implicit mc: MarkerContext): Unit = debug(message, null)
+  override def info(message: => String)(implicit mc: MarkerContext): Unit = info(message, null)
+  override def warn(message: => String)(implicit mc: MarkerContext): Unit = warn(message, null)
   override def error(message: => String)(implicit mc: MarkerContext): Unit = error(message, null)
 
   override def debug(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {
     super.debug(legacyMessage.getOrElse(message), error)
     rollbar.foreach(_.debug(error, convert(attributes), message))
+  }
+
+  override def info(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {
+    super.info(legacyMessage.getOrElse(message), error)
+    rollbar.foreach(_.info(error, convert(attributes), message))
   }
 
   override def warn(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {

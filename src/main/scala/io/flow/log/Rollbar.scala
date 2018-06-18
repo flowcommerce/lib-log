@@ -122,20 +122,8 @@ case class RollbarLogger @AssistedInject() (
   // Used to preserve any existing messages tied to Sumo alerts until fully migrated to Rollbar
   def legacyMessage(value: String): RollbarLogger = this.copy(legacyMessage = Some(value))
 
-  override def debug(message: => String)(implicit mc: MarkerContext): Unit = debug(message, null)
-  override def info(message: => String)(implicit mc: MarkerContext): Unit = info(message, null)
   override def warn(message: => String)(implicit mc: MarkerContext): Unit = warn(message, null)
   override def error(message: => String)(implicit mc: MarkerContext): Unit = error(message, null)
-
-  override def debug(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {
-    super.debug(legacyMessage.getOrElse(message), error)
-    rollbar.foreach(_.debug(error, convert(attributes), message))
-  }
-
-  override def info(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {
-    super.info(legacyMessage.getOrElse(message), error)
-    rollbar.foreach(_.info(error, convert(attributes), message))
-  }
 
   override def warn(message: => String, error: => Throwable)(implicit mc: MarkerContext): Unit = {
     super.warn(legacyMessage.getOrElse(message), error)

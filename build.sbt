@@ -11,7 +11,7 @@ lazy val root = project
   .enablePlugins(PlayScala)
   .settings(
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play26" % "0.4.76",
+      "io.flow" %% "lib-play-play26" % "0.4.77",
       "com.rollbar" % "rollbar-java" % "1.2.0",
       "com.google.code.gson" % "gson" % "2.8.5",
       "net.codingwell" %% "scala-guice" % "4.2.1"

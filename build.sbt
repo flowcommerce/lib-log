@@ -16,10 +16,10 @@ lazy val root = project
       "com.google.code.gson" % "gson" % "2.8.5",
       "net.codingwell" %% "scala-guice" % "4.2.1"
     ),
-    resolvers += "Artifactory" at "https://flow.artifactoryonline.com/flow/libs-release/",
+    resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
     credentials += Credentials(
       "Artifactory Realm",
-      "flow.artifactoryonline.com",
+      "flow.jfrog.io",
       System.getenv("ARTIFACTORY_USERNAME"),
       System.getenv("ARTIFACTORY_PASSWORD")
     ),
@@ -27,7 +27,7 @@ lazy val root = project
 )
 
 publishTo := {
-  val host = "https://flow.artifactoryonline.com/flow"
+  val host = "https://flow.jfrog.io/flow"
   if (isSnapshot.value) {
     Some("Artifactory Realm" at s"$host/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime)
   } else {

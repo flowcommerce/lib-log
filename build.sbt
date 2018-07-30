@@ -4,26 +4,24 @@ organization := "io.flow"
 
 scalaVersion in ThisBuild := "2.12.6"
 
-crossScalaVersions := Seq("2.12.6", "2.11.12")
+libraryDependencies ++= Seq(
+  "io.flow" %% "lib-util" % "0.0.10",
+  "com.rollbar" % "rollbar-java" % "1.2.1",
+  "com.google.inject.extensions" % "guice-assistedinject" % "4.2.0",
+  "net.codingwell" %% "scala-guice" % "4.2.1",
+  "com.google.code.gson" % "gson" % "2.8.5",
+  // The following will need to be provided by users of this lib,
+  // meaning they can supply their own version (as long as compatible).
+  "com.typesafe.play" %% "play-json" % "2.6.9" % Provided
+)
 
-lazy val root = project
-  .in(file("."))
-  .enablePlugins(PlayScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play26" % "0.4.91",
-      "com.rollbar" % "rollbar-java" % "1.2.1",
-      "com.google.code.gson" % "gson" % "2.8.5",
-      "net.codingwell" %% "scala-guice" % "4.2.1"
-    ),
-    resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
-    credentials += Credentials(
-      "Artifactory Realm",
-      "flow.jfrog.io",
-      System.getenv("ARTIFACTORY_USERNAME"),
-      System.getenv("ARTIFACTORY_PASSWORD")
-    ),
-    scalaSource in Compile := baseDirectory.value / "src"
+resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"
+
+credentials += Credentials(
+  "Artifactory Realm",
+  "flow.jfrog.io",
+  System.getenv("ARTIFACTORY_USERNAME"),
+  System.getenv("ARTIFACTORY_PASSWORD")
 )
 
 publishTo := {

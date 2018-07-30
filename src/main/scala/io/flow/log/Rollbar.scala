@@ -133,7 +133,7 @@ case class RollbarLogger @AssistedInject() (
 
   def info(message: => String): Unit = {
     logger.info(legacyMessage.getOrElse(message))
-    rollbar.foreach(_.info(message, convert(attributes)))
+    //not sending to rollbar to save quota
   }
 
   def error(message: => String, error: => Throwable): Unit = {

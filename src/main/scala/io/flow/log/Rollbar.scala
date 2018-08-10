@@ -110,6 +110,7 @@ case class RollbarLogger @AssistedInject() (
   config: Config
 ) {
   import RollbarLogger._
+  import net.logstash.logback.marker.Markers.appendEntries
 
   private val logger = LoggerFactory.getLogger("application")
 
@@ -127,7 +128,7 @@ case class RollbarLogger @AssistedInject() (
   def error(message: => String): Unit = error(message, null)
 
   def warn(message: => String, error: => Throwable): Unit = {
-    logger.warn(legacyMessage.getOrElse(message), error)
+    logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
     rollbar.foreach(_.warning(error, convert(attributes), message))
   }
 
@@ -137,7 +138,7 @@ case class RollbarLogger @AssistedInject() (
   }
 
   def error(message: => String, error: => Throwable): Unit = {
-    logger.error(legacyMessage.getOrElse(message))
+    logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message))
     rollbar.foreach(_.error(error, convert(attributes), message))
   }
 }

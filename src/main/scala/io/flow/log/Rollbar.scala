@@ -38,7 +38,10 @@ class RollbarProvider @Inject() (
 
     val fingerprintGenerator = new FingerprintGenerator {
       override def from(data: Data): String = {
-        Try(data.getCustom.get(RollbarLogger.Keys.Fingerprint)).toOption.map(_.toString).orNull
+        Option(data.getCustom)
+          .flatMap(custom => Option(custom.get(RollbarLogger.Keys.Fingerprint)))
+          .map(_.toString)
+          .orNull
       }
     }
 

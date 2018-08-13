@@ -1,6 +1,6 @@
 package io.flow.log
 
-import com.google.gson.{GsonBuilder, JsonParser}
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.assistedinject.{Assisted, AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
 import com.rollbar.api.payload.data.Data
@@ -11,10 +11,10 @@ import io.flow.util.{Config, FlowEnvironment}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import org.slf4j.LoggerFactory
+import play.api.libs.json.jackson.PlayJsonModule
 import play.api.libs.json.{JsValue, Json, Writes}
 
 import scala.collection.JavaConverters._
-import scala.util.Try
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -97,13 +97,14 @@ object RollbarLogger {
     val OrderNumber = "order_number"
     val Fingerprint = "fingerprint"
   }
-  val gson = new GsonBuilder().disableHtmlEscaping().create()
-  val jsonParser = new JsonParser()
 
-  // TODO: See if there's a less expensive way to perform this conversion
-  def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] = (attributes map { case (key, value) =>
-    key -> gson.toJson(jsonParser.parse(Json.toJson(value).toString)).asInstanceOf[Object]
-  }).asJava
+  val mapper = new ObjectMapper()
+  mapper.registerModule(PlayJsonModule)
+
+  def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
+    (attributes map { case (key, value) =>
+      key -> mapper.valueToTree(value)
+    }).asJava
 }
 
 case class RollbarLogger @AssistedInject() (

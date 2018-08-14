@@ -50,6 +50,7 @@ class RollbarProvider @Inject() (
       }
     }
 
+    // give a jackson serializer to rollbar, instead of using rollbar's hand-rolled serializer
     val jacksonSerializer = new com.rollbar.notifier.sender.json.JsonSerializer {
       // plain old jackson serializer
       val mapper = new ObjectMapper()
@@ -68,12 +69,7 @@ class RollbarProvider @Inject() (
       })
 
       override def toJson(payload: Payload): String = {
-        mapper.writeValueAsString({
-          val h = new java.util.HashMap[String, Object]()
-          h.put("access_token", payload.getAccessToken)
-          h.put("data", payload.getData.asJson)
-          h
-        })
+        mapper.writeValueAsString(payload)
       }
 
       case class ResultObj(code: Int = -1, message: Option[String], uuid: Option[String])

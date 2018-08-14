@@ -1,3 +1,5 @@
+package io.flow.log
+
 import com.fasterxml.jackson.databind.MappingJsonFactory
 import net.logstash.logback.decorate.JsonFactoryDecorator
 import play.api.libs.json.jackson.PlayJsonModule

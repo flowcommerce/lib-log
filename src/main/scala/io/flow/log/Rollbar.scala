@@ -3,16 +3,21 @@ package io.flow.log
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.assistedinject.{Assisted, AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
+import com.rollbar.api.json.JsonSerializable
+import com.rollbar.api.payload.Payload
 import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
+import com.rollbar.notifier.sender.json.JsonSerializer
+import com.rollbar.notifier.sender.result.Result
+import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
 import io.flow.util.{Config, FlowEnvironment}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import org.slf4j.LoggerFactory
 import play.api.libs.json.jackson.PlayJsonModule
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json._
 
 import scala.collection.JavaConverters._
 
@@ -45,10 +50,49 @@ class RollbarProvider @Inject() (
       }
     }
 
+    val jacksonSerializer = new JsonSerializer {
+      val mapper = new ObjectMapper().registerModule(PlayJsonModule)
+
+      override def toJson(payload: Payload): String = {
+        mapper.writeValueAsString({
+          val h = new java.util.HashMap[String, Object]()
+          h.put("access_token", payload.getAccessToken)
+          h.put("data", payload.getData.asJson)
+          h
+        })
+      }
+
+      case class ResultObj(code: Int = -1, message: Option[String], uuid: Option[String])
+
+      override def resultFrom(response: String): Result = {
+        Json.parse(response).validate(Json.reads[ResultObj]) match {
+          case JsSuccess(obj, _) =>
+            val builder = new Result.Builder().code(obj.code)
+            if (obj.code == 0)
+              builder.body(obj.uuid.get)
+            else
+              builder.body(obj.message.get)
+            builder.build()
+          case _ =>
+            new Result.Builder().code(-1).body("Didn't get an object").build()
+        }
+      }
+    }
+
     ConfigBuilder.withAccessToken(token)
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
+      .sender(
+        new BufferedSender.Builder()
+          .sender(
+            new SyncSender.Builder()
+              .accessToken(token)
+              .jsonSerializer(jacksonSerializer)
+              .build()
+          )
+          .build()
+      )
       .environment(FlowEnvironment.Current.toString)
       .build()
   }
@@ -98,13 +142,8 @@ object RollbarLogger {
     val Fingerprint = "fingerprint"
   }
 
-  val mapper = new ObjectMapper()
-  mapper.registerModule(PlayJsonModule)
-
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
-    (attributes map { case (key, value) =>
-      key -> mapper.valueToTree(value)
-    }).asJava
+    attributes.asJava.asInstanceOf[java.util.Map[String, Object]]
 }
 
 case class RollbarLogger @AssistedInject() (

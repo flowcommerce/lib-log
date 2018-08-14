@@ -1,15 +1,15 @@
 package io.flow.log
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.assistedinject.{Assisted, AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
-import com.rollbar.api.json.JsonSerializable
 import com.rollbar.api.payload.Payload
 import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
-import com.rollbar.notifier.sender.json.JsonSerializer
 import com.rollbar.notifier.sender.result.Result
 import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
 import io.flow.util.{Config, FlowEnvironment}
@@ -50,8 +50,22 @@ class RollbarProvider @Inject() (
       }
     }
 
-    val jacksonSerializer = new JsonSerializer {
-      val mapper = new ObjectMapper().registerModule(PlayJsonModule)
+    val jacksonSerializer = new com.rollbar.notifier.sender.json.JsonSerializer {
+      // plain old jackson serializer
+      val mapper = new ObjectMapper()
+
+      // de/serialize play-json types
+      mapper.registerModule(PlayJsonModule)
+
+      // serialize Rollbar JsonSerializable types
+      mapper.registerModule(new SimpleModule() {
+        addSerializer(
+          classOf[com.rollbar.api.json.JsonSerializable],
+          (value: com.rollbar.api.json.JsonSerializable, gen: JsonGenerator, serializers: SerializerProvider) => {
+            serializers.defaultSerializeValue(value.asJson(), gen)
+          }
+        )
+      })
 
       override def toJson(payload: Payload): String = {
         mapper.writeValueAsString({

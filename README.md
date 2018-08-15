@@ -11,4 +11,4 @@ To use the Rollbar logger in your project:
   - Enable the module in your configuration file:
     - `play.modules.enabled += "io.flow.log.RollbarModule"`
   - Inject `logger: RollbarLogger` and use it instead of the default Play logger
-  - Add [logback.xml](https://github.com/flowcommerce/content/blob/master/api/conf/logback.xml) and [logback-test.xml](https://github.com/flowcommerce/content/blob/master/api/conf/logback-test.xml) to `api/conf`
+  - Add [logback.xml](https://github.com/flowcommerce/label/blob/master/api/conf/logback.xml) and [logback-test.xml](https://github.com/flowcommerce/label/blob/master/api/conf/logback-test.xml) to `api/conf`

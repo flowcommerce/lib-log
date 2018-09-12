@@ -14,6 +14,7 @@ To create a project:
 
 Then, to add the Rollbar logger to a project:
 
+  - Add `"io.flow" %% "lib-log" % "0.0.29",` to build.sbt
   - Add a `rollbar.token = ${?ROLLBAR_TOKEN}` to your configuration file (e.g. `base.conf`).
     - This is the **project access token** and can be generated at `https://rollbar.com/flow.io/{project name}/settings/access_tokens/`. The scope must be `post_server_item` or higher (e.g. `write`).
   - Enable the module in your configuration file:

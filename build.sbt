@@ -7,7 +7,7 @@ scalaVersion in ThisBuild := "2.12.6"
 libraryDependencies ++= Seq(
   "io.flow" %% "lib-util" % "0.1.0",
   "com.rollbar" % "rollbar-java" % "1.3.1",
-  "com.google.inject.extensions" % "guice-assistedinject" % "4.2.0",
+  "com.google.inject.extensions" % "guice-assistedinject" % "4.2.1",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "net.logstash.logback" % "logstash-logback-encoder" % "5.2", // structured logging to sumo
   // The following will need to be provided by users of this lib,

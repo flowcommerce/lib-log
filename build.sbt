@@ -2,7 +2,7 @@ name := "lib-log"
 
 organization := "io.flow"
 
-scalaVersion in ThisBuild := "2.12.6"
+scalaVersion in ThisBuild := "2.12.7"
 
 libraryDependencies ++= Seq(
   "io.flow" %% "lib-util" % "0.1.1",

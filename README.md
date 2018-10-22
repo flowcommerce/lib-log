@@ -25,4 +25,5 @@ Lastly, to use Rollbar:
   - Inject `logger: RollbarLogger` and use it instead of the default Play logger
   - Look at an example [here](https://github.com/flowcommerce/label/blob/76f684401719be46143b3b116523d37f48620f0a/api/app/db/ShippingLabelsDao.scala#L464-L473) on how to use it
   - Look at the [source code](https://github.com/flowcommerce/lib-log/blob/master/src/main/scala/io/flow/log/Rollbar.scala#L159) to see how it works under the hood
-  - Note that currently `info` is not sent to the Rollbar; if it's important enough for Rollbar, use `warn` or `error`
+  - Note that currently only `warn` and `error` log levels are sent to the Rollbar API. Other log statements continue to get logged in the logs (and Sumo)
+  - We recommend replacing all calls to `Play.api.logger` w/ `RollbarLogger` - makes it easy to see there is a single logger plus will give us consistency in our log statements.

@@ -147,6 +147,7 @@ object RollbarLogger {
   }
 
   object Keys {
+    val RequestId = "request_id"
     val Organization = "organization"
     val OrderNumber = "order_number"
     val Fingerprint = "fingerprint"
@@ -170,9 +171,10 @@ case class RollbarLogger @AssistedInject() (
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
 
-  def fingerprint(value: String) = withKeyValue(Keys.Fingerprint, value)
-  def organization(value: String) = withKeyValue(Keys.Organization, value)
-  def orderNumber(value: String) = withKeyValue(Keys.OrderNumber, value)
+  def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
+  def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
+  def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
+  def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
 
   // Used to preserve any existing messages tied to Sumo alerts until fully migrated to Rollbar
   def legacyMessage(value: String): RollbarLogger = this.copy(legacyMessage = Some(value))

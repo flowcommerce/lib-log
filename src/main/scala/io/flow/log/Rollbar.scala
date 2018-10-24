@@ -151,6 +151,8 @@ object RollbarLogger {
     val Organization = "organization"
     val OrderNumber = "order_number"
     val Fingerprint = "fingerprint"
+    val ItemNumber = "item_number"
+    val ExperienceKey = "experience_key"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
@@ -175,6 +177,8 @@ case class RollbarLogger @AssistedInject() (
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
   def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
+  def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
+  def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
 
   // Used to preserve any existing messages tied to Sumo alerts until fully migrated to Rollbar
   def legacyMessage(value: String): RollbarLogger = this.copy(legacyMessage = Some(value))

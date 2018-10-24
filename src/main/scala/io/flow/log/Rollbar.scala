@@ -39,8 +39,13 @@ class RollbarModule extends AbstractModule with ScalaModule {
 class RollbarProvider @Inject() (
   config: Config
 ) extends Provider[Option[Rollbar]] {
-  val baseConfig = config.optionalString("rollbar.token") map { token =>
+  override def get(): Option[Rollbar] = config.optionalString("rollbar.token").map { token =>
+    RollbarInstance.instance(token)
+  }
+}
 
+object RollbarInstance {
+  def instance(token: String): Rollbar = {
     val fingerprintGenerator = new FingerprintGenerator {
       override def from(data: Data): String = {
         Option(data.getCustom)
@@ -89,7 +94,7 @@ class RollbarProvider @Inject() (
       }
     }
 
-    ConfigBuilder.withAccessToken(token)
+    val baseConfig = ConfigBuilder.withAccessToken(token)
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
@@ -105,9 +110,9 @@ class RollbarProvider @Inject() (
       )
       .environment(FlowEnvironment.Current.toString)
       .build()
-  }
 
-  override def get(): Option[Rollbar] = baseConfig.map(Rollbar.init)
+    Rollbar.init(baseConfig)
+  }
 }
 
 // Allows RollbarLogger to be injected directly instead of creating one with the factory

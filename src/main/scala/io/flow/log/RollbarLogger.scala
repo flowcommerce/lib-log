@@ -74,9 +74,3 @@ case class RollbarLogger @AssistedInject() (
   }
 
 }
-
-
-
-
-
-

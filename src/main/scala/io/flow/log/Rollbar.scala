@@ -187,29 +187,27 @@ case class RollbarLogger @AssistedInject() (
   def error(message: => String): Unit = error(message, null)
 
   def debug(message: => String): Unit = {
-    //not sending to rollbar to save quota
     logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message))
+    //not sending to rollbar to save quota
   }
 
   def debug(message: => String, error: => Throwable): Unit = {
-    withError(error).debug(message)
+    logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    //not sending to rollbar to save quota
   }
 
   def warn(message: => String, error: => Throwable): Unit = {
-    withError(error).warn(message)
+    logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    rollbar.foreach(_.warning(error, convert(attributes), message))
   }
 
   def info(message: => String): Unit = {
-    //not sending to rollbar to save quota
     logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message))
+    //not sending to rollbar to save quota
   }
 
   def error(message: => String, error: => Throwable): Unit = {
-    withError(error).error(message)
+    logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message))
+    rollbar.foreach(_.error(error, convert(attributes), message))
   }
-
-  private[this] def withError(error: => Throwable): RollbarLogger = {
-    withKeyValue("error_message", error.getMessage)
-  }
-
 }

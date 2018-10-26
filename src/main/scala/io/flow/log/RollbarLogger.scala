@@ -48,6 +48,26 @@ case class RollbarLogger @AssistedInject() (
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
 
+  def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
+
+  /**
+    * Accepts a list of values and writes them as individual attributes.
+    * for example:
+    *   withKeyValues("error", Seq("foo", "bar"))
+    *
+    * results in the attributes:
+    *  - error_1: foo
+    *  - error_2: bar
+    */
+  def withKeyValues[T: Writes](key: String, values: Seq[T]): RollbarLogger = {
+    values.zipWithIndex.foldLeft(this) { case (l, pair) =>
+      val value = pair._1
+      val index = pair._2
+      val suffix = s"${key}_" + (index + 1)
+      l.withKeyValue(s"name$suffix", value)
+    }
+  }
+
   def debug(message: => String): Unit = debug(message, null)
   def info(message: => String): Unit = info(message, null)
   def warn(message: => String): Unit = warn(message, null)

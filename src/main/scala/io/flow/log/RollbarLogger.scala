@@ -63,8 +63,7 @@ case class RollbarLogger @AssistedInject() (
     values.zipWithIndex.foldLeft(this) { case (l, pair) =>
       val value = pair._1
       val index = pair._2
-      val suffix = s"${key}_" + (index + 1)
-      l.withKeyValue(s"name$suffix", value)
+      l.withKeyValue(s"${key}_" + (index + 1), value)
     }
   }
 

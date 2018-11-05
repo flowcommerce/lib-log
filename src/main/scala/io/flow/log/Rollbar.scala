@@ -120,8 +120,7 @@ class RollbarLoggerProvider @Inject() (
 // nice methods like `withKeyValue`
 @Singleton
 class RollbarFactory @Inject()(
-  rollbarProvider: Provider[Option[Rollbar]],
-  config: Config
+  rollbarProvider: Provider[Option[Rollbar]]
 ) extends RollbarLogger.Factory {
   @AssistedInject
   def rollbar(
@@ -130,7 +129,6 @@ class RollbarFactory @Inject()(
   ): RollbarLogger = RollbarLogger(
     rollbarProvider.get(),
     attributes,
-    legacyMessage,
-    config
+    legacyMessage
   )
 }

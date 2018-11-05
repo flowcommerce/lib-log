@@ -31,8 +31,7 @@ object RollbarLogger {
 case class RollbarLogger @AssistedInject() (
   rollbar: Option[Rollbar],
   @Assisted attributes: Map[String, JsValue],
-  @Assisted legacyMessage: Option[String],
-  config: Config
+  @Assisted legacyMessage: Option[String]
 ) {
 
   import RollbarLogger._

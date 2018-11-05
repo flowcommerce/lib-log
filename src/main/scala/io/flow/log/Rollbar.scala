@@ -37,10 +37,7 @@ class RollbarModule extends AbstractModule with ScalaModule {
 class RollbarProvider @Inject() (
   config: Config
 ) extends Provider[Option[Rollbar]] {
-  override def get(): Option[Rollbar] =
-    config.
-      optionalString("rollbar.token").
-      map(RollbarProvider.rollbar)
+  override def get(): Option[Rollbar] = config.optionalString("rollbar.token").map(RollbarProvider.rollbar)
 }
 
 // Allows RollbarLogger to be injected directly instead of creating one with the factory
@@ -66,21 +63,6 @@ class RollbarFactory @Inject()(
     attributes,
     legacyMessage
   )
-}
-
-@Singleton
-class Blah @Inject()() {
-
-  def getLogger(
-    token: String,
-    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
-    legacyMessage: Option[String] = None
-  ): RollbarLogger = {
-    val baseConfig = RollbarProvider.baseConfig(token)
-    val rollbar = Some(Rollbar.init(baseConfig))
-    RollbarLogger(rollbar, attributes, legacyMessage)
-  }
-
 }
 
 // Common method to get rollbar Config

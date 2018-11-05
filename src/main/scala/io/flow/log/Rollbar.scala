@@ -37,8 +37,69 @@ class RollbarModule extends AbstractModule with ScalaModule {
 class RollbarProvider @Inject() (
   config: Config
 ) extends Provider[Option[Rollbar]] {
-  val baseConfig = config.optionalString("rollbar.token") map { token =>
+  override def get(): Option[Rollbar] =
+    config.
+      optionalString("rollbar.token").
+      map(RollbarProvider.rollbar)
+}
 
+// Allows RollbarLogger to be injected directly instead of creating one with the factory
+@Singleton
+class RollbarLoggerProvider @Inject() (
+  factory: RollbarFactory
+) extends Provider[RollbarLogger] {
+  override def get(): RollbarLogger = factory.rollbar()
+}
+
+// Necessary evil to allow us to copy instances of RollbarLogger, letting us have
+// nice methods like `withKeyValue`
+@Singleton
+class RollbarFactory @Inject()(
+  rollbarProvider: Provider[Option[Rollbar]]
+) extends RollbarLogger.Factory {
+  @AssistedInject
+  def rollbar(
+    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
+    legacyMessage: Option[String] = None
+  ): RollbarLogger = RollbarLogger(
+    rollbarProvider.get(),
+    attributes,
+    legacyMessage
+  )
+}
+
+@Singleton
+class Blah @Inject()() {
+
+  def getLogger(
+    token: String,
+    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
+    legacyMessage: Option[String] = None
+  ): RollbarLogger = {
+    val baseConfig = RollbarProvider.baseConfig(token)
+    val rollbar = Some(Rollbar.init(baseConfig))
+    RollbarLogger(rollbar, attributes, legacyMessage)
+  }
+
+}
+
+// Common method to get rollbar Config
+object RollbarProvider {
+  def logger(
+    token: String,
+    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
+    legacyMessage: Option[String] = None
+  ): RollbarLogger = {
+    val rb = Some(rollbar(token))
+    RollbarLogger(rb, attributes, legacyMessage)
+  }
+
+  def rollbar(token: String): Rollbar = {
+    val baseConfig = RollbarProvider.baseConfig(token)
+    Rollbar.init(baseConfig)
+  }
+
+  def baseConfig(token: String): com.rollbar.notifier.config.Config = {
     val fingerprintGenerator = new FingerprintGenerator {
       override def from(data: Data): String = {
         Option(data.getCustom)
@@ -104,31 +165,4 @@ class RollbarProvider @Inject() (
       .environment(FlowEnvironment.Current.toString)
       .build()
   }
-
-  override def get(): Option[Rollbar] = baseConfig.map(Rollbar.init)
-}
-
-// Allows RollbarLogger to be injected directly instead of creating one with the factory
-@Singleton
-class RollbarLoggerProvider @Inject() (
-  factory: RollbarFactory
-) extends Provider[RollbarLogger] {
-  override def get(): RollbarLogger = factory.rollbar()
-}
-
-// Necessary evil to allow us to copy instances of RollbarLogger, letting us have
-// nice methods like `withKeyValue`
-@Singleton
-class RollbarFactory @Inject()(
-  rollbarProvider: Provider[Option[Rollbar]]
-) extends RollbarLogger.Factory {
-  @AssistedInject
-  def rollbar(
-    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
-    legacyMessage: Option[String] = None
-  ): RollbarLogger = RollbarLogger(
-    rollbarProvider.get(),
-    attributes,
-    legacyMessage
-  )
 }

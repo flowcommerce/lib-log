@@ -41,11 +41,11 @@ case class RollbarLogger @AssistedInject() (
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
-  def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
-  def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
-  def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
-  def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
-  def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
+  def organization[T: Writes](value: T): RollbarLogger = withKeyValue(Keys.Organization, value)
+  def orderNumber[T: Writes](value: T): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
+  def requestId[T: Writes](value: T): RollbarLogger = withKeyValue(Keys.RequestId, value)
+  def itemNumber[T: Writes](value: T): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
+  def experienceKey[T: Writes](value: T): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
 
   def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
 

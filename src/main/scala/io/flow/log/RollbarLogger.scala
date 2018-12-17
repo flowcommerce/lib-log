@@ -22,6 +22,7 @@ object RollbarLogger {
     val Fingerprint = "fingerprint"
     val ItemNumber = "item_number"
     val ExperienceKey = "experience_key"
+    val SuppressRollbar = "suppress_rollbar"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
@@ -31,7 +32,8 @@ object RollbarLogger {
 case class RollbarLogger @AssistedInject() (
   rollbar: Option[Rollbar],
   @Assisted attributes: Map[String, JsValue],
-  @Assisted legacyMessage: Option[String]
+  @Assisted legacyMessage: Option[String],
+  shouldSuppressRollbar: Boolean = false
 ) {
 
   import RollbarLogger._
@@ -46,6 +48,14 @@ case class RollbarLogger @AssistedInject() (
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
+  /**
+    * Use for warnings or errors that:
+    * - are very high volume
+    * - should be recorded for audit purposes but no action needs to be taken
+    *
+    * Structured errors will still be sent to Sumo.
+    */
+  def suppressRollbar(): RollbarLogger = this.copy(shouldSuppressRollbar = true)
 
   def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
 
@@ -83,12 +93,18 @@ case class RollbarLogger @AssistedInject() (
 
   def warn(message: => String, error: => Throwable): Unit = {
     logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-    rollbar.foreach(_.warning(error, convert(attributes), message))
+    attributes
+    if (!shouldSuppressRollbar) {
+      rollbar.foreach(_.warning(error, convert(attributes), message))
+    }
+
   }
 
   def error(message: => String, error: => Throwable): Unit = {
     logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-    rollbar.foreach(_.error(error, convert(attributes), message))
+    if (!shouldSuppressRollbar) {
+      rollbar.foreach(_.error(error, convert(attributes), message))
+    }
   }
 
 }

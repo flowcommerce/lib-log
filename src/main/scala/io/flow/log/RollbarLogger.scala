@@ -101,7 +101,6 @@ case class RollbarLogger @AssistedInject() (
 
   def warn(message: => String, error: => Throwable): Unit = {
     logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-    attributes
     if (shouldSendToRollbar) {
       rollbar.foreach(_.warning(error, convert(attributes), message))
     }

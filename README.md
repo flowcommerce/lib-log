@@ -9,16 +9,12 @@ To create a project:
 - go [here](https://rollbar.com/settings/accounts/flow.io/projects/?project_selector=1#create)
 - enter the service name and select Eastern as the timezone
 - after clicking "create", select "Java" as the primary SDK
-- the access token should be under the `rollbar-java` header; set it in production using the following command:
-  - `dev env set --keyval ROLLBAR_TOKEN=ACCESS_TOKEN_GOES_HERE --env production --app APP_NAME_GOES_HERE`
 
 Then, to add the Rollbar logger to a project:
 
   - Add `"io.flow" %% "lib-log" % "0.0.43",` to build.sbt
-  - Add a `rollbar.token = ${?ROLLBAR_TOKEN}` to your configuration file (e.g. `base.conf`).
+  - Set the Rollbar token: `dev env set --keyval ROLLBAR_TOKEN=ACCESS_TOKEN_GOES_HERE --env production --app APP_NAME_GOES_HERE`
     - This is the **project access token** and can be generated at `https://rollbar.com/flow.io/{project name}/settings/access_tokens/`. The scope must be `post_server_item` or higher (e.g. `write`).
-  - Enable the module in your configuration file:
-    - `play.modules.enabled += "io.flow.log.RollbarModule"`
   - Add [logback.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback.xml) and [logback-test.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback-test.xml) to `api/conf`
 
 Lastly, to use Rollbar:

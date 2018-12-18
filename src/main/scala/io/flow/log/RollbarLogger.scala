@@ -10,6 +10,10 @@ import scala.collection.JavaConverters._
 
 object RollbarLogger {
 
+  /**
+    * Simple [[RollbarLogger]] that does not log to Rollbar.
+    * Useful for tests requiring a [[RollbarLogger]].
+    */
   val SimpleLogger =
     RollbarLogger(rollbar = None, attributes = Map.empty, legacyMessage = None, shouldSendToRollbar = false)
 

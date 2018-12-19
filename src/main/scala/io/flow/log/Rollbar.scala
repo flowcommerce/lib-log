@@ -24,6 +24,7 @@ class RollbarModule extends AbstractModule with ScalaModule {
     bind[Option[Rollbar]].toProvider[RollbarProvider]
     install(new FactoryModuleBuilder().build(classOf[RollbarLogger.Factory]))
     bind[RollbarLogger].toProvider[RollbarLoggerProvider]
+    ()
   }
 }
 

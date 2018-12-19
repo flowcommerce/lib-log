@@ -1,22 +1,15 @@
 package io.flow.log
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
-import com.rollbar.api.payload.Payload
 import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
-import com.rollbar.notifier.sender.result.Result
 import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
 import io.flow.util.{Config, FlowEnvironment}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
-import play.api.libs.json.jackson.PlayJsonModule
-import play.api.libs.json._
 
 
 class RollbarModule extends AbstractModule with ScalaModule {
@@ -57,7 +50,7 @@ class RollbarFactory @Inject()(
 ) extends RollbarLogger.Factory {
   @AssistedInject
   def rollbar(
-    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
+    attributes: Map[String, AnyRef] = Map.empty[String, AnyRef],
     legacyMessage: Option[String] = None
   ): RollbarLogger = RollbarLogger(
     rollbarProvider.get(),
@@ -70,7 +63,7 @@ class RollbarFactory @Inject()(
 object RollbarProvider {
   def logger(
     token: String,
-    attributes: Map[String, JsValue] = Map.empty[String, JsValue],
+    attributes: Map[String, AnyRef] = Map.empty[String, AnyRef],
     legacyMessage: Option[String] = None
   ): RollbarLogger = {
     val rb = Some(rollbar(token))
@@ -92,45 +85,6 @@ object RollbarProvider {
       }
     }
 
-    // give a jackson serializer to rollbar, instead of using rollbar's hand-rolled serializer
-    val jacksonSerializer = new com.rollbar.notifier.sender.json.JsonSerializer {
-      // plain old jackson serializer
-      val mapper = new ObjectMapper()
-
-      // de/serialize play-json types
-      mapper.registerModule(PlayJsonModule)
-
-      // serialize Rollbar JsonSerializable types
-      mapper.registerModule(new SimpleModule() {
-        addSerializer(
-          classOf[com.rollbar.api.json.JsonSerializable],
-          (value: com.rollbar.api.json.JsonSerializable, gen: JsonGenerator, serializers: SerializerProvider) => {
-            serializers.defaultSerializeValue(value.asJson(), gen)
-          }
-        )
-      })
-
-      override def toJson(payload: Payload): String = {
-        mapper.writeValueAsString(payload)
-      }
-
-      case class ResultObj(code: Int = -1, message: Option[String], uuid: Option[String])
-
-      override def resultFrom(response: String): Result = {
-        Json.parse(response).validate(Json.reads[ResultObj]) match {
-          case JsSuccess(obj, _) =>
-            val builder = new Result.Builder().code(obj.code)
-            if (obj.code == 0)
-              builder.body(obj.uuid.get)
-            else
-              builder.body(obj.message.get)
-            builder.build()
-          case _ =>
-            new Result.Builder().code(-1).body("Didn't get an object").build()
-        }
-      }
-    }
-
     ConfigBuilder.withAccessToken(token)
       .handleUncaughtErrors(true)
       .language("scala")
@@ -140,7 +94,6 @@ object RollbarProvider {
           .sender(
             new SyncSender.Builder()
               .accessToken(token)
-              .jsonSerializer(jacksonSerializer)
               .build()
           )
           .build()

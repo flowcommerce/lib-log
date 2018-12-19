@@ -4,7 +4,7 @@ import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.rollbar.notifier.Rollbar
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
-import play.api.libs.json.{JsValue, Json, Writes}
+
 import scala.collection.JavaConverters._
 
 object RollbarLogger {
@@ -19,7 +19,7 @@ object RollbarLogger {
   trait Factory {
 
     @AssistedInject
-    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String]): RollbarLogger
+    def rollbar(attributes: Map[String, AnyRef], legacyMessage: Option[String]): RollbarLogger
   }
 
   object Keys {
@@ -31,24 +31,20 @@ object RollbarLogger {
     val ExperienceKey = "experience_key"
     val SuppressRollbar = "suppress_rollbar"
   }
-
-  def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
-    attributes.asJava.asInstanceOf[java.util.Map[String, Object]]
 }
 
 case class RollbarLogger @AssistedInject() (
   rollbar: Option[Rollbar],
-  @Assisted attributes: Map[String, JsValue],
+  @Assisted attributes: Map[String, AnyRef],
   @Assisted legacyMessage: Option[String],
   shouldSendToRollbar: Boolean = true
 ) {
-
-  import RollbarLogger._
+  import RollbarLogger.Keys
 
   private val logger = LoggerFactory.getLogger("application")
 
-  def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
-  def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
+  def withKeyValue(keyValue: (String, AnyRef)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
+  def withKeyValue(key: String, value: AnyRef): RollbarLogger = this.copy(attributes = attributes + (key -> value))
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
   def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
@@ -64,7 +60,7 @@ case class RollbarLogger @AssistedInject() (
     */
   def withSendToRollbar(sendToRollbar:Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
 
-  def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
+  def withKeyValues(keyValue: (String, Seq[AnyRef])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
 
   /**
     * Accepts a list of values and writes them as individual attributes.
@@ -75,7 +71,7 @@ case class RollbarLogger @AssistedInject() (
     *  - error_1: foo
     *  - error_2: bar
     */
-  def withKeyValues[T: Writes](key: String, values: Seq[T]): RollbarLogger = {
+  def withKeyValues(key: String, values: Seq[AnyRef]): RollbarLogger = {
     values.zipWithIndex.foldLeft(this) { case (l, pair) =>
       val value = pair._1
       val index = pair._2
@@ -89,27 +85,27 @@ case class RollbarLogger @AssistedInject() (
   def error(message: => String): Unit = error(message, null)
 
   def debug(message: => String, error: => Throwable): Unit = {
-    logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    logger.debug(appendEntries(attributes.asJava), legacyMessage.getOrElse(message), error)
     //not sending to rollbar to save quota
   }
 
   def info(message: => String, error: => Throwable): Unit = {
-    logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    logger.info(appendEntries(attributes.asJava), legacyMessage.getOrElse(message), error)
     //not sending to rollbar to save quota
   }
 
   def warn(message: => String, error: => Throwable): Unit = {
-    logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    logger.warn(appendEntries(attributes.asJava), legacyMessage.getOrElse(message), error)
     if (shouldSendToRollbar) {
-      rollbar.foreach(_.warning(error, convert(attributes), message))
+      rollbar.foreach(_.warning(error, attributes.asJava, message))
     }
 
   }
 
   def error(message: => String, error: => Throwable): Unit = {
-    logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    logger.error(appendEntries(attributes.asJava), legacyMessage.getOrElse(message), error)
     if (shouldSendToRollbar) {
-      rollbar.foreach(_.error(error, convert(attributes), message))
+      rollbar.foreach(_.error(error, attributes.asJava, message))
     }
   }
 

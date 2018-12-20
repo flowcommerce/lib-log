@@ -19,7 +19,7 @@ object RollbarLogger {
   trait Factory {
 
     @AssistedInject
-    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String]): RollbarLogger
+    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String], shouldSendToRollbar: Boolean): RollbarLogger
   }
 
   object Keys {
@@ -40,7 +40,7 @@ case class RollbarLogger @AssistedInject() (
   rollbar: Option[Rollbar],
   @Assisted attributes: Map[String, JsValue],
   @Assisted legacyMessage: Option[String],
-  shouldSendToRollbar: Boolean = true
+  @Assisted shouldSendToRollbar: Boolean = true
 ) {
 
   import RollbarLogger._

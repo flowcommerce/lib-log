@@ -58,11 +58,13 @@ class RollbarFactory @Inject()(
   @AssistedInject
   def rollbar(
     attributes: Map[String, JsValue] = Map.empty[String, JsValue],
-    legacyMessage: Option[String] = None
+    legacyMessage: Option[String] = None,
+    shouldSendToRollbar: Boolean = false
   ): RollbarLogger = RollbarLogger(
     rollbarProvider.get(),
     attributes,
-    legacyMessage
+    legacyMessage,
+    shouldSendToRollbar
   )
 }
 

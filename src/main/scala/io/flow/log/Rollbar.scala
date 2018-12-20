@@ -12,7 +12,7 @@ import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
 import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
-import io.flow.util.{Config, FlowEnvironment}
+import io.flow.util.{ChainedConfig, Config, EnvironmentConfig, FlowEnvironment, PropertyConfig}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json.jackson.PlayJsonModule
@@ -21,6 +21,7 @@ import play.api.libs.json._
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
+    bind[Config].toProvider[ConfigProvider]
     bind[Option[Rollbar]].toProvider[RollbarProvider]
     install(new FactoryModuleBuilder().build(classOf[RollbarLogger.Factory]))
     bind[RollbarLogger].toProvider[RollbarLoggerProvider]
@@ -47,6 +48,14 @@ class RollbarLoggerProvider @Inject() (
   factory: RollbarFactory
 ) extends Provider[RollbarLogger] {
   override def get(): RollbarLogger = factory.rollbar()
+}
+
+/**
+  * In order to create a RollbarProvider we need a Config, for which we need yet another Provider #guicefail #facepalm
+  */
+@Singleton
+class ConfigProvider() extends Provider[Config] {
+  override def get(): Config =  new ChainedConfig(Seq(EnvironmentConfig, PropertyConfig))
 }
 
 // Necessary evil to allow us to copy instances of RollbarLogger, letting us have

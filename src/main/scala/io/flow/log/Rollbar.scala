@@ -3,6 +3,7 @@ package io.flow.log
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.github.ghik.silencer.silent
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
 import com.rollbar.api.payload.Payload
@@ -100,7 +101,7 @@ object RollbarProvider {
       val mapper = new ObjectMapper()
 
       // de/serialize play-json types
-      mapper.registerModule(PlayJsonModule)
+      mapper.registerModule(PlayJsonModule): @silent //please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
 
       // serialize Rollbar JsonSerializable types
       mapper.registerModule(new SimpleModule() {

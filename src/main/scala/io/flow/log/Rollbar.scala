@@ -101,7 +101,7 @@ object RollbarProvider {
       val mapper = new ObjectMapper()
 
       // de/serialize play-json types
-      mapper.registerModule(PlayJsonModule): @silent //please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
+      mapper.registerModule(PlayJsonModule): @silent //TODO please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
 
       // serialize Rollbar JsonSerializable types
       mapper.registerModule(new SimpleModule() {

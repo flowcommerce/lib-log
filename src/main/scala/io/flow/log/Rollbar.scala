@@ -60,7 +60,7 @@ class RollbarFactory @Inject()(
   def rollbar(
     attributes: Map[String, JsValue] = Map.empty[String, JsValue],
     legacyMessage: Option[String] = None,
-    shouldSendToRollbar: Boolean = false
+    shouldSendToRollbar: Boolean = true
   ): RollbarLogger = RollbarLogger(
     rollbarProvider.get(),
     attributes,

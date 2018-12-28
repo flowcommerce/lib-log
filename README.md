@@ -12,7 +12,7 @@ To create a project:
 
 Then, to add the Rollbar logger to a project:
 
-  - Add `"io.flow" %% "lib-log" % "0.0.43",` to build.sbt
+  - Add `"io.flow" %% "lib-log" % "0.0.51",` to build.sbt
   - Set the Rollbar token: `dev env set --keyval ROLLBAR_TOKEN=ACCESS_TOKEN_GOES_HERE --env production --app APP_NAME_GOES_HERE`
     - This is the **project access token** and can be generated at `https://rollbar.com/flow.io/{project name}/settings/access_tokens/`. The scope must be `post_server_item` or higher (e.g. `write`).
   - Add [logback.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback.xml) and [logback-test.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback-test.xml) to `api/conf`

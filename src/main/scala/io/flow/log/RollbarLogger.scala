@@ -47,6 +47,8 @@ case class RollbarLogger @AssistedInject() (
 
   private val logger = LoggerFactory.getLogger("application")
 
+  if (rollbar.isEmpty) warn("[RollbarLogger] Starting logging without Rollbar")
+
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)

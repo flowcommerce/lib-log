@@ -15,6 +15,7 @@ Then, to add the Rollbar logger to a project:
   - Make sure you depend on a recent version of lib-play
   - Set the Rollbar token: `dev env set --keyval ROLLBAR_TOKEN=ACCESS_TOKEN_GOES_HERE --env production --app APP_NAME_GOES_HERE`
     - This is the **project access token** and can be generated at `https://rollbar.com/flow.io/{project name}/settings/access_tokens/`. The scope must be `post_server_item` or higher (e.g. `write`).
+  - Add `rollbar.token = ${?ROLLBAR_TOKEN}` to `base.conf`
   - Add [logback.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback.xml) and [logback-test.xml](https://github.com/flowcommerce/misc/blob/master/log/templates/logback-test.xml) to `api/conf`
 
 Lastly, to use Rollbar:

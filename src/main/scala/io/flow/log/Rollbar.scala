@@ -47,7 +47,8 @@ class RollbarProvider @Inject() (
 class RollbarLoggerProvider @Inject() (
   factory: RollbarFactory
 ) extends Provider[RollbarLogger] {
-  override def get(): RollbarLogger = factory.rollbar()
+  private[this] lazy val logger = factory.rollbar()
+  override def get(): RollbarLogger = logger
 }
 
 // Necessary evil to allow us to copy instances of RollbarLogger, letting us have

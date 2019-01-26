@@ -2,7 +2,7 @@
 *.swo
 *.swp
 *.tmp
-.DS_STORE
+.DS_Store
 .idea/
 .ivy2
 /logs/

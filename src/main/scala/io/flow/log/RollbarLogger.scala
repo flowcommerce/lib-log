@@ -87,6 +87,7 @@ case class RollbarLogger @AssistedInject() (
   def info(message: => String): Unit = info(message, null)
   def warn(message: => String): Unit = warn(message, null)
   def error(message: => String): Unit = error(message, null)
+  def critical(message: => String): Unit = error(message, null)
 
   def debug(message: => String, error: => Throwable): Unit = {
     logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
@@ -110,6 +111,14 @@ case class RollbarLogger @AssistedInject() (
     logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
     if (shouldSendToRollbar) {
       rollbar.foreach(_.error(error, convert(attributes), message))
+    }
+  }
+
+  // critical in rollbar = allows us to trigger PagerDuty and other notifications immediately
+  def critical(message: => String, error: => Throwable): Unit = {
+    logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (shouldSendToRollbar) {
+      rollbar.foreach(_.critical(error, convert(attributes), message))
     }
   }
 

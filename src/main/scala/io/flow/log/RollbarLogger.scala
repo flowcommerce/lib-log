@@ -87,7 +87,7 @@ case class RollbarLogger @AssistedInject() (
   def info(message: => String): Unit = info(message, null)
   def warn(message: => String): Unit = warn(message, null)
   def error(message: => String): Unit = error(message, null)
-  def critical(message: => String): Unit = error(message, null)
+  def critical(message: => String): Unit = critical(message, null)
 
   def debug(message: => String, error: => Throwable): Unit = {
     logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)

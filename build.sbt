@@ -5,7 +5,7 @@ organization := "io.flow"
 scalaVersion in ThisBuild := "2.12.8"
 
 libraryDependencies ++= Seq(
-  "io.flow" %% "lib-util" % "0.1.9",
+  "io.flow" %% "lib-util" % "0.1.12",
   "com.rollbar" % "rollbar-java" % "1.4.0",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.2",
   "net.codingwell" %% "scala-guice" % "4.2.2",
@@ -35,5 +35,4 @@ publishTo := {
   }
 }
 
-version := "0.0.58"
 version := "0.0.59"

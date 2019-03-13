@@ -4,7 +4,7 @@ organization := "io.flow"
 
 scalaVersion in ThisBuild := "2.12.8"
 
-val timeLibSuffix = ""
+val timeLibSuffix = "-javatime"
 
 libraryDependencies ++= Seq(
   "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.14",

@@ -43,6 +43,8 @@ case class RollbarLogger @AssistedInject() (
   @Assisted shouldSendToRollbar: Boolean = true
 ) {
 
+  private[this] val MaxValuesToWrite = 10
+
   import RollbarLogger._
 
   private val logger = LoggerFactory.getLogger("application")
@@ -75,11 +77,19 @@ case class RollbarLogger @AssistedInject() (
     *  - error_1: foo
     *  - error_2: bar
     */
-  def withKeyValues[T: Writes](key: String, values: Seq[T]): RollbarLogger = {
-    values.zipWithIndex.foldLeft(this) { case (l, pair) =>
+  def withKeyValues[T: Writes](key: String, values: Seq[T])(
+    implicit maxValues: Int = MaxValuesToWrite
+  ): RollbarLogger = {
+    val logger = values.take(maxValues).zipWithIndex.foldLeft(this) { case (l, pair) =>
       val value = pair._1
       val index = pair._2
       l.withKeyValue(s"${key}_" + (index + 1), value)
+    }
+    if (values.length > maxValues) {
+      // Include the total number of entries
+      logger.withKeyValue(s"${key}_number", values.length)
+    } else {
+      logger
     }
   }
 

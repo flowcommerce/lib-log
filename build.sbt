@@ -1,31 +1,45 @@
+import play.sbt.PlayScala._
+
 name := "lib-log"
 
 organization := "io.flow"
 
 scalaVersion in ThisBuild := "2.12.8"
 
-val timeLibSuffix = ""
+crossScalaVersions := Seq("2.12.8")
 
-libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.18",
-  "com.rollbar" % "rollbar-java" % "1.4.0",
-  "com.google.inject.extensions" % "guice-assistedinject" % "4.2.2",
-  "net.codingwell" %% "scala-guice" % "4.2.2",
-  "net.logstash.logback" % "logstash-logback-encoder" % "5.2", // structured logging to sumo
-  // The following will need to be provided by users of this lib,
-  // meaning they can supply their own version (as long as compatible).
-  "com.typesafe.play" %% "play-json" % "2.7.1" % Provided,
-  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.3.0"),
-  "com.github.ghik" %% "silencer-lib" % "1.3.0" % Provided
-)
+val libSuffix = ""
 
-resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"
-
-credentials += Credentials(
-  "Artifactory Realm",
-  "flow.jfrog.io",
-  System.getenv("ARTIFACTORY_USERNAME"),
-  System.getenv("ARTIFACTORY_PASSWORD")
+lazy val root = project
+  .in(file("."))
+  .enablePlugins(PlayScala)
+  .settings(
+    libraryDependencies ++= Seq(
+      ws,
+      guice,
+      "io.flow" %% s"lib-util$libSuffix" % "0.1.18",
+      "com.rollbar" % "rollbar-java" % "1.4.0",
+      "com.google.inject.extensions" % "guice-assistedinject" % "4.2.2",
+      "net.codingwell" %% "scala-guice" % "4.2.2",
+      "net.logstash.logback" % "logstash-logback-encoder" % "5.2", // structured logging to sumo
+      // The following will need to be provided by users of this lib,
+      // meaning they can supply their own version (as long as compatible).
+      "com.typesafe.play" %% "play-json" % "2.7.1" % Provided,
+      compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.3.0"),
+      "com.github.ghik" %% "silencer-lib" % "1.3.0" % Provided,
+      "io.flow" %% s"lib-test-utils$libSuffix" % "0.0.39" % Test
+    ),
+    scalacOptions += "-P:silencer:pathFilters=app/io/flow/generated/.*",
+    resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+    resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+    resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
+    javaOptions in Test += "-Dconfig.file=conf/test.conf",
+    credentials += Credentials(
+      "Artifactory Realm",
+      "flow.jfrog.io",
+      System.getenv("ARTIFACTORY_USERNAME"),
+      System.getenv("ARTIFACTORY_PASSWORD")
+    )
 )
 
 publishTo := {
@@ -36,5 +50,3 @@ publishTo := {
     Some("Artifactory Realm" at s"$host/libs-release-local")
   }
 }
-
-version := "0.0.66"

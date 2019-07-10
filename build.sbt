@@ -7,7 +7,7 @@ scalaVersion in ThisBuild := "2.12.8"
 val timeLibSuffix = "-javatime"
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.25",
+  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.27",
   "com.rollbar" % "rollbar-java" % "1.4.0",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.2",
   "net.codingwell" %% "scala-guice" % "4.2.2",
@@ -37,4 +37,4 @@ publishTo := {
   }
 }
 
-version := "0.0.72"
+version := "0.0.73"

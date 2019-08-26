@@ -1,9 +1,8 @@
 package io.flow.log
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.github.ghik.silencer.silent
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
 import com.rollbar.api.payload.Payload
@@ -12,12 +11,11 @@ import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
-import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
 import io.flow.util.{Config, FlowEnvironment}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
-import play.api.libs.json.jackson.PlayJsonModule
 import play.api.libs.json._
+import play.api.libs.json.jackson.PlayJsonModule
 
 
 class RollbarModule extends AbstractModule with ScalaModule {
@@ -102,7 +100,7 @@ object RollbarProvider {
       val mapper = new ObjectMapper()
 
       // de/serialize play-json types
-      mapper.registerModule(PlayJsonModule): @silent //TODO please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
+      mapper.registerModule(new PlayJsonModule(JsonParserSettings()))
 
       // serialize Rollbar JsonSerializable types
       mapper.registerModule(new SimpleModule() {
@@ -123,12 +121,10 @@ object RollbarProvider {
       override def resultFrom(response: String): Result = {
         Json.parse(response).validate(Json.reads[ResultObj]) match {
           case JsSuccess(obj, _) =>
-            val builder = new Result.Builder().code(obj.code)
-            if (obj.code == 0)
-              builder.body(obj.uuid.get)
-            else
-              builder.body(obj.message.get)
-            builder.build()
+            new Result.Builder()
+              .code(obj.code)
+              .body(if (obj.code == 0) obj.uuid.get else obj.message.get)
+              .build
           case _ =>
             new Result.Builder().code(-1).body("Didn't get an object").build()
         }
@@ -139,16 +135,8 @@ object RollbarProvider {
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
-      .sender(
-        new BufferedSender.Builder()
-          .sender(
-            new SyncSender.Builder()
-              .accessToken(token)
-              .jsonSerializer(jacksonSerializer)
-              .build()
-          )
-          .build()
-      )
+      .jsonSerializer(jacksonSerializer)
+      .accessToken(token)
       .environment(FlowEnvironment.Current.toString)
       .build()
   }

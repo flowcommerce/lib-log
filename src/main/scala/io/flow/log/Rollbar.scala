@@ -136,7 +136,6 @@ object RollbarProvider {
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
       .jsonSerializer(jacksonSerializer)
-      .accessToken(token)
       .environment(FlowEnvironment.Current.toString)
       .build()
   }

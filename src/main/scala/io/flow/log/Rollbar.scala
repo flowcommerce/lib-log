@@ -123,12 +123,10 @@ object RollbarProvider {
       override def resultFrom(response: String): Result = {
         Json.parse(response).validate(Json.reads[ResultObj]) match {
           case JsSuccess(obj, _) =>
-            val builder = new Result.Builder().code(obj.code)
-            if (obj.code == 0)
-              builder.body(obj.uuid.get)
-            else
-              builder.body(obj.message.get)
-            builder.build()
+            new Result.Builder()
+              .code(obj.code)
+              .body(if (obj.code == 0) obj.uuid.get else obj.message.get)
+              .build
           case _ =>
             new Result.Builder().code(-1).body("Didn't get an object").build()
         }

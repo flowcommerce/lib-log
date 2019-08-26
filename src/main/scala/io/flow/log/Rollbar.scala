@@ -1,9 +1,8 @@
 package io.flow.log
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.github.ghik.silencer.silent
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider}
 import com.rollbar.api.payload.Payload
@@ -12,12 +11,11 @@ import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
-import com.rollbar.notifier.sender.{BufferedSender, SyncSender}
 import io.flow.util.{Config, FlowEnvironment}
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
-import play.api.libs.json.jackson.PlayJsonModule
 import play.api.libs.json._
+import play.api.libs.json.jackson.PlayJsonModule
 
 
 class RollbarModule extends AbstractModule with ScalaModule {

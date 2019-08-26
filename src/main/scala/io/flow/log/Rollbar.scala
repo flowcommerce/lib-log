@@ -139,16 +139,8 @@ object RollbarProvider {
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
-      .sender(
-        new BufferedSender.Builder()
-          .sender(
-            new SyncSender.Builder()
-              .accessToken(token)
-              .jsonSerializer(jacksonSerializer)
-              .build()
-          )
-          .build()
-      )
+      .jsonSerializer(jacksonSerializer)
+      .accessToken(token)
       .environment(FlowEnvironment.Current.toString)
       .build()
   }

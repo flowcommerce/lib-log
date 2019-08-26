@@ -8,7 +8,7 @@ val timeLibSuffix = ""
 
 libraryDependencies ++= Seq(
   "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.30",
-  "com.rollbar" % "rollbar-java" % "1.4.0",
+  "com.rollbar" % "rollbar-java" % "1.5.2",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.2",
   "net.codingwell" %% "scala-guice" % "4.2.2",
   "net.logstash.logback" % "logstash-logback-encoder" % "5.2", // structured logging to sumo

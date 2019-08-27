@@ -16,7 +16,7 @@ import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonModule
-
+import com.github.ghik.silencer.silent
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -100,7 +100,7 @@ object RollbarProvider {
       val mapper = new ObjectMapper()
 
       // de/serialize play-json types
-      mapper.registerModule(new PlayJsonModule(JsonParserSettings()))
+      mapper.registerModule(PlayJsonModule): @silent //TODO please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
 
       // serialize Rollbar JsonSerializable types
       mapper.registerModule(new SimpleModule() {

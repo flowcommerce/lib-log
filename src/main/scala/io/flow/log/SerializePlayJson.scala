@@ -1,14 +1,19 @@
 package io.flow.log
 
-import com.fasterxml.jackson.databind.MappingJsonFactory
+import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.ghik.silencer.silent
 import net.logstash.logback.decorate.JsonFactoryDecorator
 import play.api.libs.json.jackson.PlayJsonModule
 
 // allows you to pass play-json types to logstash-logback-encoder
 class SerializePlayJson extends JsonFactoryDecorator {
-  override def decorate(factory: MappingJsonFactory): MappingJsonFactory = {
-    factory.getCodec.registerModule(PlayJsonModule): @silent //TODO: please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
+  override def decorate(factory: JsonFactory): JsonFactory = {
+    /*
+    https://github.com/logstash/logstash-logback-encoder/issues/345#issuecomment-512585630
+    "It is safe to downcast factory.getCodec() to ObjectMapper as long as you have not configured the encoder to use a non-JSON output format."
+     */
+    factory.getCodec.asInstanceOf[ObjectMapper].registerModule(PlayJsonModule): @silent //TODO: please remove once PlayJsonModule(jsonParsersettings) is accessible outside of the jackson package
     factory
   }
 }

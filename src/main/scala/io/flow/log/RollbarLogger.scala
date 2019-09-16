@@ -54,6 +54,7 @@ case class RollbarLogger @AssistedInject() (
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
   def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
+  def orderNumber(value: Option[String]): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)

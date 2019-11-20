@@ -46,6 +46,10 @@ class LogUtil @Inject() (logger: RollbarLogger) {
       f
   }
 
+  /**
+    * @param frequency Log once per frequency. For instance, 100 means that the duration will be logged once every 100
+    *                  calls on average.
+    */
   def durationF[T](
     info: String,
     fingerprint: String,

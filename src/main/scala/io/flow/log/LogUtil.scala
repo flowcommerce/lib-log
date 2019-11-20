@@ -41,6 +41,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
           .withKeyValue("duration", end - start)
           .info(info)
       }
-    }
+    } else
+      f
   }
 }

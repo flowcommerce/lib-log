@@ -23,7 +23,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     data: Option[Map[String, String]] = None,
     frequency: Long = 1L,
   )(f: => T): T = {
-    if (frequency != 1L && Random.nextLong() % frequency == 0) {
+    if (frequency == 1L || Random.nextLong() % frequency == 0) {
       val start = System.currentTimeMillis()
       try {
         f

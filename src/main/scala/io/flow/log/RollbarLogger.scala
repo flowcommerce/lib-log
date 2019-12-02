@@ -100,28 +100,29 @@ case class RollbarLogger @AssistedInject() (
   def error(message: => String): Unit = error(message, null)
 
   def debug(message: => String, error: => Throwable): Unit = {
-    logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (logger.isDebugEnabled)
+      logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
     //not sending to rollbar to save quota
   }
 
   def info(message: => String, error: => Throwable): Unit = {
-    logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (logger.isInfoEnabled)
+      logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
     //not sending to rollbar to save quota
   }
 
   def warn(message: => String, error: => Throwable): Unit = {
-    logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-    if (shouldSendToRollbar) {
+    if (logger.isWarnEnabled)
+      logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (shouldSendToRollbar)
       rollbar.foreach(_.warning(error, convert(attributes), message))
-    }
-
   }
 
   def error(message: => String, error: => Throwable): Unit = {
-    logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-    if (shouldSendToRollbar) {
+    if (logger.isErrorEnabled)
+      logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (shouldSendToRollbar)
       rollbar.foreach(_.error(error, convert(attributes), message))
-    }
   }
 
 }

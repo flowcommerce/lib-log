@@ -11,3 +11,5 @@
 /RUNNING_PID
 logs/
 target/
+*.metals
+*.bloop

@@ -17,8 +17,8 @@ libraryDependencies ++= Seq(
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.7.4" % Provided,
-  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.4.2"),
-  "com.github.ghik" %% "silencer-lib" % "1.4.2" % Provided
+  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.4.4" cross CrossVersion.full),
+  "com.github.ghik" %% "silencer-lib" % "1.4.4" % Provided cross CrossVersion.full
 )
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"

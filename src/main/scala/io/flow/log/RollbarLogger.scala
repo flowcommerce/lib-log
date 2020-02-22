@@ -5,7 +5,7 @@ import com.rollbar.notifier.Rollbar
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object RollbarLogger {
 

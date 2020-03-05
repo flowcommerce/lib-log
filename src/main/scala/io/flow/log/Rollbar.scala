@@ -16,7 +16,6 @@ import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonModule
-import com.github.ghik.silencer.silent
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {

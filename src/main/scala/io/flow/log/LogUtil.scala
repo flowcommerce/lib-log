@@ -64,9 +64,8 @@ class LogUtil @Inject() (logger: RollbarLogger) {
   )(f: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     if (frequency == 1L || Random.nextLong() % frequency == 0) {
       val start = System.currentTimeMillis()
-      f.onComplete { _ =>
+      f.andThen { _ =>
         val end = System.currentTimeMillis()
-
         logger
           .fingerprint(fingerprint)
           .organization(organizationId)
@@ -79,7 +78,6 @@ class LogUtil @Inject() (logger: RollbarLogger) {
           .withKeyValue("duration", end - start)
           .info(info)
       }
-      f
     } else
       f
   }

@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.6",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
+  "org.scalatest" %% "scalatest" % "3.1.1" % Test,
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.8.1" % Provided,

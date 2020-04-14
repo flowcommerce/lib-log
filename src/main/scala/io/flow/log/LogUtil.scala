@@ -24,7 +24,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     data: Option[Map[String, String]] = None,
     frequency: Long = 1L,
   )(f: => T): T = {
-    if (frequency == 1L || Random.nextLong() % frequency == 0) {
+    if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()
       try {
         f
@@ -62,7 +62,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     data: Option[Map[String, String]] = None,
     frequency: Long = 1L,
   )(f: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
-    if (frequency == 1L || Random.nextLong() % frequency == 0) {
+    if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()
       f.andThen { _ =>
         val end = System.currentTimeMillis()
@@ -81,5 +81,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     } else
       f
   }
+
+  def shouldLog(frequency: Long): Boolean = frequency == 1L || Random.nextLong() % frequency == 0
 
 }

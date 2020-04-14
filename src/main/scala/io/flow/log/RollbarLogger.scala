@@ -111,13 +111,13 @@ case class RollbarLogger @AssistedInject() (
   def debug(message: => String, error: => Throwable): Unit =
     if (shouldLog && logger.isDebugEnabled) {
       logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      // not rollbar to save quota
+      // not sending to rollbar to save quota
     }
 
   def info(message: => String, error: => Throwable): Unit =
     if (shouldLog && logger.isInfoEnabled) {
       logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      // not rollbar to save quota
+      // not sending to rollbar to save quota
     }
 
   def warn(message: => String, error: => Throwable): Unit =
@@ -130,7 +130,7 @@ case class RollbarLogger @AssistedInject() (
 
   def error(message: => String, error: => Throwable): Unit =
     if (shouldLog) {
-      if (shouldLog && logger.isErrorEnabled)
+      if (logger.isErrorEnabled)
         logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
       if (shouldSendToRollbar)
         rollbar.foreach(_.error(error, convert(attributes), message))

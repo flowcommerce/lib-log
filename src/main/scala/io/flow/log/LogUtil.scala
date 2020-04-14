@@ -82,4 +82,6 @@ class LogUtil @Inject() (logger: RollbarLogger) {
       f
   }
 
+  def shouldLog(frequency: Long): Boolean = frequency == 1L || Random.nextLong() % frequency == 0
+
 }

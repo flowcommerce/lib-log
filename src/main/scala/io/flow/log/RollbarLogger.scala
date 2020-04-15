@@ -5,9 +5,7 @@ import com.rollbar.notifier.Rollbar
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
-
 import scala.jdk.CollectionConverters._
-import scala.util.Random
 
 object RollbarLogger {
 
@@ -42,8 +40,7 @@ case class RollbarLogger @AssistedInject() (
   rollbar: Option[Rollbar],
   @Assisted attributes: Map[String, JsValue],
   @Assisted legacyMessage: Option[String],
-  @Assisted shouldSendToRollbar: Boolean = true,
-  frequency: Long = 1L
+  @Assisted shouldSendToRollbar: Boolean = true
 ) {
 
   private[this] val MaxValuesToWrite = 10
@@ -51,12 +48,6 @@ case class RollbarLogger @AssistedInject() (
   import RollbarLogger._
 
   private val logger = LoggerFactory.getLogger("application")
-
-  /**
-    * Log once per frequency.
-    * For instance, 100 means that the message will be logged once every 100 calls on average.
-    */
-  def withFrequency(frequency: Long): RollbarLogger = this.copy(frequency = frequency)
 
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
@@ -108,35 +99,30 @@ case class RollbarLogger @AssistedInject() (
   def warn(message: => String): Unit = warn(message, null)
   def error(message: => String): Unit = error(message, null)
 
-  def debug(message: => String, error: => Throwable): Unit =
-    if (shouldLog && logger.isDebugEnabled) {
+  def debug(message: => String, error: => Throwable): Unit = {
+    if (logger.isDebugEnabled)
       logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      // not sending to rollbar to save quota
-    }
+    //not sending to rollbar to save quota
+  }
 
-  def info(message: => String, error: => Throwable): Unit =
-    if (shouldLog && logger.isInfoEnabled) {
+  def info(message: => String, error: => Throwable): Unit = {
+    if (logger.isInfoEnabled)
       logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      // not sending to rollbar to save quota
-    }
+    //not sending to rollbar to save quota
+  }
 
-  def warn(message: => String, error: => Throwable): Unit =
-    if (shouldLog) {
-      if (logger.isWarnEnabled)
-        logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      if (shouldSendToRollbar)
-        rollbar.foreach(_.warning(error, convert(attributes), message))
-    }
+  def warn(message: => String, error: => Throwable): Unit = {
+    if (logger.isWarnEnabled)
+      logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (shouldSendToRollbar)
+      rollbar.foreach(_.warning(error, convert(attributes), message))
+  }
 
-  def error(message: => String, error: => Throwable): Unit =
-    if (shouldLog) {
-      if (logger.isErrorEnabled)
-        logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
-      if (shouldSendToRollbar)
-        rollbar.foreach(_.error(error, convert(attributes), message))
-    }
-
-  private def shouldLog: Boolean =
-    frequency == 1L || (Random.nextInt() % frequency == 0)
+  def error(message: => String, error: => Throwable): Unit = {
+    if (logger.isErrorEnabled)
+      logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+    if (shouldSendToRollbar)
+      rollbar.foreach(_.error(error, convert(attributes), message))
+  }
 
 }

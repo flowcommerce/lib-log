@@ -7,7 +7,7 @@ scalaVersion := "2.13.1"
 val timeLibSuffix = ""
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.43",
+  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.44",
   "com.rollbar" % "rollbar-java" % "1.6.0",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.6",

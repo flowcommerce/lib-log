@@ -19,9 +19,8 @@ object RollbarLogger {
     RollbarLogger(rollbar = None, attributes = Map.empty, legacyMessage = None, shouldSendToRollbar = false)
 
   trait Factory {
-
     @AssistedInject
-    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String], shouldSendToRollbar: Boolean): RollbarLogger
+    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String], shouldSendToRollbar: Boolean, frequency: Long): RollbarLogger
   }
 
   object Keys {
@@ -43,7 +42,7 @@ case class RollbarLogger @AssistedInject() (
   @Assisted attributes: Map[String, JsValue],
   @Assisted legacyMessage: Option[String],
   @Assisted shouldSendToRollbar: Boolean = true,
-  frequency: Long = 1L
+  @Assisted frequency: Long = 1L
 ) {
 
   private[this] val MaxValuesToWrite = 10

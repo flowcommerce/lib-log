@@ -2,7 +2,7 @@ name := "lib-log"
 
 organization := "io.flow"
 
-scalaVersion := "2.13.1"
+scalaVersion := "2.13.3"
 
 val timeLibSuffix = ""
 
@@ -16,8 +16,8 @@ libraryDependencies ++= Seq(
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.9.0" % Provided,
-  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.6.0" cross CrossVersion.full),
-  "com.github.ghik" %% "silencer-lib" % "1.6.0" % Provided cross CrossVersion.full,
+  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.7.0" cross CrossVersion.full),
+  "com.github.ghik" %% "silencer-lib" % "1.7.0" % Provided cross CrossVersion.full,
 )
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"

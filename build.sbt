@@ -7,12 +7,12 @@ scalaVersion := "2.13.3"
 val timeLibSuffix = ""
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.58",
+  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.60",
   "com.rollbar" % "rollbar-java" % "1.7.5",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
-  "org.scalatest" %% "scalatest" % "3.2.2" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.3" % Test,
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.9.1" % Provided,

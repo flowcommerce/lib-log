@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.3" % Test,
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
-  "com.typesafe.play" %% "play-json" % "2.9.1" % Provided,
+  "com.typesafe.play" %% "play-json" % "2.9.2" % Provided,
   compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.7.1" cross CrossVersion.full),
   "com.github.ghik" %% "silencer-lib" % "1.7.1" % Provided cross CrossVersion.full,
 )

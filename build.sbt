@@ -2,12 +2,10 @@ name := "lib-log"
 
 organization := "io.flow"
 
-scalaVersion := "2.13.3"
-
-val timeLibSuffix = ""
+scalaVersion := "2.13.4"
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util$timeLibSuffix" % "0.1.66",
+  "io.flow" %% s"lib-util" % "0.1.66",
   "com.rollbar" % "rollbar-java" % "1.7.5",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.11",

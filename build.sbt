@@ -16,12 +16,12 @@ lazy val allScalacOptions = Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util" % "0.1.73",
-  "com.rollbar" % "rollbar-java" % "1.7.6",
+  "io.flow" %% s"lib-util" % "0.1.75",
+  "com.rollbar" % "rollbar-java" % "1.7.7",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
-  "org.scalatest" %% "scalatest" % "3.2.8" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.9" % Test,
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.9.2" % Provided,

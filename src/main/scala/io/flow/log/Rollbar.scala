@@ -12,10 +12,13 @@ import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
 import io.flow.util.{Config, FlowEnvironment}
+
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonModule
+
+import scala.util.Try
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -120,19 +123,23 @@ object RollbarProvider {
       case class ResultObj(code: Int = -1, message: Option[String], uuid: Option[String])
 
       override def resultFrom(response: String): Result = {
-        Json.parse(response).validate(Json.reads[ResultObj]) match {
-          case JsSuccess(obj, _) =>
-            new Result.Builder()
-              .code(obj.code)
-              .body(if (obj.code == 0) obj.uuid.get else obj.message.get)
-              .build
-          case _ =>
-            new Result.Builder().code(-1).body("Didn't get an object").build()
+        Try {
+          Json.parse(response).validate(Json.reads[ResultObj]).map { obj =>
+            val body = if (obj.code == 0) {
+              obj.uuid.orElse(obj.message).getOrElse(s"No message or uuid in response: $response")
+            } else {
+              obj.message.orElse(obj.uuid).getOrElse(s"No message or uuid in response: $response")
+            }
+            new Result.Builder().code(obj.code).body(body).build
+          }.asOpt
+        }.toOption.flatten.getOrElse {
+          new Result.Builder().code(1).body(s"Invalid response: $response").build()
         }
       }
     }
 
-    ConfigBuilder.withAccessToken(token)
+    ConfigBuilder
+      .withAccessToken(token)
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)

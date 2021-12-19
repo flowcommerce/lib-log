@@ -15,7 +15,7 @@ object RollbarLogger {
     * Simple [[RollbarLogger]] that does not log to Rollbar.
     * Useful for tests requiring a [[RollbarLogger]].
     */
-  val SimpleLogger =
+  val SimpleLogger: RollbarLogger =
     RollbarLogger(rollbar = None, attributes = Map.empty, legacyMessage = None, shouldSendToRollbar = false)
 
   trait Factory {
@@ -26,6 +26,7 @@ object RollbarLogger {
   object Keys {
     val RequestId = "request_id"
     val Organization = "organization"
+    val ChannelId = "channel_id"
     val OrderNumber = "order_number"
     val Fingerprint = "fingerprint"
     val ItemNumber = "item_number"
@@ -61,6 +62,7 @@ case class RollbarLogger @AssistedInject() (
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
+  def channelId(value: String): RollbarLogger = withKeyValue(Keys.ChannelId, value)
   def orderNumber(value: String): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
   def orderNumber(value: Option[String]): RollbarLogger = withKeyValue(Keys.OrderNumber, value)
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)

@@ -18,8 +18,6 @@ import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonModule
 
-import scala.util.Try
-
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
     bind[Option[Rollbar]].toProvider[RollbarProvider]

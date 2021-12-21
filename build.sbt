@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "io.flow" %% s"lib-util" % "0.1.88",
   "com.rollbar" % "rollbar-java" % "1.7.10",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
+  "org.typelevel" %% "cats-core" % "2.7.0",
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.10" % Test,

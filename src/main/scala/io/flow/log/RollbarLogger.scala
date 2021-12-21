@@ -1,5 +1,6 @@
 package io.flow.log
 
+import cats.data.NonEmptyChain
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.rollbar.notifier.Rollbar
 import net.logstash.logback.marker.Markers.appendEntries
@@ -103,6 +104,8 @@ case class RollbarLogger @AssistedInject() (
       logger
     }
   }
+
+  def withKeyValues[T: Writes](key: String, values: NonEmptyChain[T]): RollbarLogger = withKeyValues(key, values.toNonEmptyList.toList)
 
   def debug(message: => String): Unit = debug(message, null)
   def info(message: => String): Unit = info(message, null)

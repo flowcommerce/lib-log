@@ -16,7 +16,7 @@ lazy val allScalacOptions = Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util" % "0.1.88",
+  "io.flow" %% s"lib-util" % "0.1.90",
   "com.rollbar" % "rollbar-java" % "1.8.1",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "net.codingwell" %% "scala-guice" % "4.2.11",

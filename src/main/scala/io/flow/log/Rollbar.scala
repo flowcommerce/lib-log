@@ -18,8 +18,6 @@ import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonModule
 
-import scala.util.Try
-
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
     bind[Option[Rollbar]].toProvider[RollbarProvider]
@@ -120,20 +118,23 @@ object RollbarProvider {
         mapper.writeValueAsString(payload)
       }
 
-      case class ResultObj(code: Int = -1, message: Option[String], uuid: Option[String])
-
       override def resultFrom(response: String): Result = {
-        Try {
-          Json.parse(response).validate(Json.reads[ResultObj]).map { obj =>
-            val body = if (obj.code == 0) {
-              obj.uuid.orElse(obj.message).getOrElse(s"No message or uuid in response: $response")
-            } else {
-              obj.message.orElse(obj.uuid).getOrElse(s"No message or uuid in response: $response")
-            }
-            new Result.Builder().code(obj.code).body(body).build
-          }.asOpt
-        }.toOption.flatten.getOrElse {
-          new Result.Builder().code(1).body(s"Invalid response: $response").build()
+        val resultOpt = for {
+          obj <- Json.parse(response).validate[JsObject]
+          err <- (obj \ "err").validate[Int]
+          content <- {
+            if (err == 0)
+              (obj \ "result" \ "uuid").validate[String]
+            else
+              (obj \ "message").validate[String]
+          }
+        } yield new Result.Builder().code(err).body(content).build
+
+        resultOpt match {
+          case JsSuccess(res, _) => res
+          case JsError(errors) => new Result.Builder().code(-1).body(
+            JsError.toJson(errors).toString
+          ).build
         }
       }
     }

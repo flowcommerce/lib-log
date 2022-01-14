@@ -139,18 +139,14 @@ object RollbarProvider {
       }
     }
 
-    val builder = ConfigBuilder
+    ConfigBuilder
       .withAccessToken(token)
       .handleUncaughtErrors(true)
       .language("scala")
       .fingerPrintGenerator(fingerprintGenerator)
       .jsonSerializer(jacksonSerializer)
       .environment(FlowEnvironment.Current.toString)
-
-    sys.env.get("DD_VERSION").map { ver =>
-      builder.codeVersion(ver)
-    }
-
-    builder.build()
+      .codeVersion(sys.env.getOrElse("DD_VERSION", null))
+      .build()
   }
 }

@@ -11,6 +11,7 @@ import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
+import com.rollbar.notifier.transformer.Transformer
 import io.flow.util.{Config, FlowEnvironment}
 
 import javax.inject.{Inject, Singleton}
@@ -139,6 +140,19 @@ object RollbarProvider {
       }
     }
 
+    val configurationOverrider = new Transformer {
+      override def transform(data: Data): Data = {
+        Option(data.getCustom)
+          .flatMap(custom => Option(custom.get(RollbarLogger.Keys.Environment)))
+          .flatMap(env => Option.when(!env.toString.isBlank)(env.toString))
+          .fold(data) { environment =>
+            new Data.Builder(data)
+              .environment(environment)
+              .build()
+          }
+      }
+    }
+
     ConfigBuilder
       .withAccessToken(token)
       .handleUncaughtErrors(true)
@@ -146,6 +160,7 @@ object RollbarProvider {
       .fingerPrintGenerator(fingerprintGenerator)
       .jsonSerializer(jacksonSerializer)
       .environment(FlowEnvironment.Current.toString)
+      .transformer(configurationOverrider)
       .build()
   }
 }

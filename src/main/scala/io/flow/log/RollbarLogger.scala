@@ -3,6 +3,7 @@ package io.flow.log
 import cats.data.NonEmptyChain
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.rollbar.notifier.Rollbar
+import io.flow.common.v0.models.Environment
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
@@ -33,6 +34,7 @@ object RollbarLogger {
     val ItemNumber = "item_number"
     val ExperienceKey = "experience_key"
     val SuppressRollbar = "suppress_rollbar"
+    val Environment = "environment"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
@@ -69,6 +71,7 @@ case class RollbarLogger @AssistedInject() (
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
+  def environment(environment: Environment): RollbarLogger = withKeyValue(Keys.Environment, environment.toString)
   /**
     * Use for warnings or errors that:
     * - are very high volume

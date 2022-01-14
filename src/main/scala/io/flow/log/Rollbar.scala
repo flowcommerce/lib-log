@@ -145,7 +145,7 @@ object RollbarProvider {
         Option(data.getCustom)
           .flatMap(custom => Option(custom.get(RollbarLogger.Keys.Environment)))
           .flatMap(env => Option.when(!env.toString.isBlank)(env.toString))
-          .fold(data) { environment =>
+          .fold(ifEmpty = data) { environment =>
             new Data.Builder(data)
               .environment(environment)
               .build()

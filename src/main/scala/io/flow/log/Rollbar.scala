@@ -146,6 +146,7 @@ object RollbarProvider {
       .fingerPrintGenerator(fingerprintGenerator)
       .jsonSerializer(jacksonSerializer)
       .environment(FlowEnvironment.Current.toString)
+      .codeVersion(sys.env.getOrElse("DD_VERSION", null))
       .build()
   }
 }

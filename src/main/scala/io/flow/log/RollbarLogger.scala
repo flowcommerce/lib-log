@@ -5,10 +5,10 @@ import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.rollbar.notifier.Rollbar
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.{JsString, JsValue, Json, Writes}
 
 import scala.jdk.CollectionConverters._
-import scala.util.Random
+import scala.util.{Random, Try}
 
 object RollbarLogger {
 
@@ -32,7 +32,7 @@ object RollbarLogger {
     val Fingerprint = "fingerprint"
     val ItemNumber = "item_number"
     val ExperienceKey = "experience_key"
-    val SuppressRollbar = "suppress_rollbar"
+    val Source = "source"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
@@ -107,6 +107,11 @@ case class RollbarLogger @AssistedInject() (
 
   def withKeyValues[T: Writes](key: String, values: NonEmptyChain[T]): RollbarLogger = withKeyValues(key, values.toNonEmptyList.toList)
 
+  private def finalAttributes =
+    attributes ++ Seq(
+      source.map(Keys.Source -> JsString(_))
+    ).flatten
+
   def debug(message: => String): Unit = debug(message, null)
   def info(message: => String): Unit = info(message, null)
   def warn(message: => String): Unit = warn(message, null)
@@ -114,33 +119,45 @@ case class RollbarLogger @AssistedInject() (
 
   def debug(message: => String, error: => Throwable): Unit =
     if (shouldLog && logger.isDebugEnabled) {
-      logger.debug(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+      logger.debug(appendEntries(convert(finalAttributes)), legacyMessage.getOrElse(message), error)
       // not sending to rollbar to save quota
     }
 
   def info(message: => String, error: => Throwable): Unit =
     if (shouldLog && logger.isInfoEnabled) {
-      logger.info(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+      logger.info(appendEntries(convert(finalAttributes)), legacyMessage.getOrElse(message), error)
       // not sending to rollbar to save quota
     }
 
   def warn(message: => String, error: => Throwable): Unit =
     if (shouldLog) {
       if (logger.isWarnEnabled)
-        logger.warn(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+        logger.warn(appendEntries(convert(finalAttributes)), legacyMessage.getOrElse(message), error)
       if (shouldSendToRollbar)
-        rollbar.foreach(_.warning(error, convert(attributes), message))
+        rollbar.foreach(_.warning(error, convert(finalAttributes), message))
     }
 
   def error(message: => String, error: => Throwable): Unit =
     if (shouldLog) {
       if (logger.isErrorEnabled)
-        logger.error(appendEntries(convert(attributes)), legacyMessage.getOrElse(message), error)
+        logger.error(appendEntries(convert(finalAttributes)), legacyMessage.getOrElse(message), error)
       if (shouldSendToRollbar)
-        rollbar.foreach(_.error(error, convert(attributes), message))
+        rollbar.foreach(_.error(error, convert(finalAttributes), message))
     }
 
   private def shouldLog: Boolean =
     frequency == 1L || (Random.nextInt() % frequency == 0)
+
+  /** The class, method, file, and line number of the logging code */
+  private def source: Option[String] =
+    Try {
+      Thread.currentThread().getStackTrace.find { ste =>
+        val name = ste.getClassName
+        !name.startsWith("io.flow.log.") &&
+          !name.startsWith("java.") &&
+          !name.startsWith("scala.") &&
+          !name.startsWith("jdk.")
+      }.map(_.toString)
+    }.toOption.flatten
 
 }

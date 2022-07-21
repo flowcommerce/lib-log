@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "2.8.0",
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
+  "ch.qos.logback" % "logback-classic" % "1.2.11" % Test, // so that we can see our tests running
   "org.scalatest" %% "scalatest" % "3.2.12" % Test,
   // The following will need to be provided by users of this lib,
   // meaning they can supply their own version (as long as compatible).

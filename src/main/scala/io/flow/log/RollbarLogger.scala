@@ -32,7 +32,6 @@ object RollbarLogger {
     val Fingerprint = "fingerprint"
     val ItemNumber = "item_number"
     val ExperienceKey = "experience_key"
-    val SuppressRollbar = "suppress_rollbar"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =

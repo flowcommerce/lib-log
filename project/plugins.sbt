@@ -10,5 +10,5 @@ addSbtPlugin("io.flow" % "sbt-flow-linter" % "0.0.34")
    "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
  )
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
+addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
 

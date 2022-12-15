@@ -4,6 +4,9 @@ organization := "io.flow"
 
 scalaVersion := "2.13.10"
 
+enablePlugins(GitVersioning)
+git.useGitDescribe := true
+
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",
@@ -24,7 +27,6 @@ libraryDependencies ++= Seq(
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.14" % Test,
   // The following will need to be provided by users of this lib,
-  // meaning they can supply their own version (as long as compatible).
   "com.typesafe.play" %% "play-json" % "2.9.3" % Provided,
 )
 
@@ -47,4 +49,3 @@ publishTo := {
 }
 
 scalacOptions ++= allScalacOptions
-version := "0.1.80"

@@ -32,6 +32,7 @@ object RollbarLogger {
     val Fingerprint = "fingerprint"
     val ItemNumber = "item_number"
     val ExperienceKey = "experience_key"
+    val QuoteReference = "quote_reference"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
@@ -68,6 +69,8 @@ case class RollbarLogger @AssistedInject() (
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
+  def quoteReference(value: String): RollbarLogger = withKeyValue(Keys.QuoteReference, value)
+
   /**
     * Use for warnings or errors that:
     * - are very high volume

@@ -12,11 +12,11 @@ import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
 import io.flow.util.{Config, FlowEnvironment}
-
-import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
-import play.api.libs.json.jackson.PlayJsonModule
+import play.api.libs.json.jackson.PlayJsonMapperModule
+
+import javax.inject.{Inject, Singleton}
 
 class RollbarModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -102,7 +102,7 @@ object RollbarProvider {
       val mapper = new ObjectMapper()
 
       // de/serialize play-json types
-      mapper.registerModule(new PlayJsonModule(JsonParserSettings()))
+      mapper.registerModule(new PlayJsonMapperModule(JsonParserSettings()))
 
       // serialize Rollbar JsonSerializable types
       mapper.registerModule(new SimpleModule() {

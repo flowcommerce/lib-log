@@ -69,6 +69,7 @@ case class RollbarLogger @AssistedInject() (
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
+
   /**
     * Use for warnings or errors that:
     * - are very high volume

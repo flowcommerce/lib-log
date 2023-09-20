@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.17" % Test,
-  "com.typesafe.play" %% "play-json" % "2.10.1"
+  "com.typesafe.play" %% "play-json" % "2.9.4"
 )
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"

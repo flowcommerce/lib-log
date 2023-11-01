@@ -12,16 +12,19 @@ import scala.util.Random
 
 object RollbarLogger {
 
-  /**
-    * Simple [[RollbarLogger]] that does not log to Rollbar.
-    * Useful for tests requiring a [[RollbarLogger]].
+  /** Simple [[RollbarLogger]] that does not log to Rollbar. Useful for tests requiring a [[RollbarLogger]].
     */
   val SimpleLogger: RollbarLogger =
     RollbarLogger(rollbar = None, attributes = Map.empty, legacyMessage = None, shouldSendToRollbar = false)
 
   trait Factory {
     @AssistedInject
-    def rollbar(attributes: Map[String, JsValue], legacyMessage: Option[String], shouldSendToRollbar: Boolean, frequency: Long): RollbarLogger
+    def rollbar(
+      attributes: Map[String, JsValue],
+      legacyMessage: Option[String],
+      shouldSendToRollbar: Boolean,
+      frequency: Long
+    ): RollbarLogger
   }
 
   object Keys {
@@ -52,14 +55,13 @@ case class RollbarLogger @AssistedInject() (
 
   private val logger = LoggerFactory.getLogger("application")
 
-  /**
-    * Log once per frequency.
-    * For instance, 100 means that the message will be logged once every 100 calls on average.
+  /** Log once per frequency. For instance, 100 means that the message will be logged once every 100 calls on average.
     */
   def withFrequency(frequency: Long): RollbarLogger = this.copy(frequency = frequency)
 
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
-  def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
+  def withKeyValue[T: Writes](key: String, value: T): RollbarLogger =
+    this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
   def channelId(value: String): RollbarLogger = withKeyValue(Keys.ChannelId, value)
@@ -69,28 +71,25 @@ case class RollbarLogger @AssistedInject() (
   def itemNumber(value: String): RollbarLogger = withKeyValue(Keys.ItemNumber, value)
   def experienceKey(value: String): RollbarLogger = withKeyValue(Keys.ExperienceKey, value)
 
-  /**
-    * Use for warnings or errors that:
-    * - are very high volume
-    * - should be recorded for audit purposes but no action needs to be taken
+  /** Use for warnings or errors that:
+    *   - are very high volume
+    *   - should be recorded for audit purposes but no action needs to be taken
     *
     * Structured errors will still be sent to Sumo.
     */
-  def withSendToRollbar(sendToRollbar:Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
+  def withSendToRollbar(sendToRollbar: Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
 
   def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
 
-  /**
-    * Accepts a list of values and writes them as individual attributes.
-    * for example:
-    *   withKeyValues("error", Seq("foo", "bar"))
+  /** Accepts a list of values and writes them as individual attributes. for example: withKeyValues("error", Seq("foo",
+    * "bar"))
     *
     * results in the attributes:
-    *  - error_1: foo
-    *  - error_2: bar
+    *   - error_1: foo
+    *   - error_2: bar
     */
-  def withKeyValues[T: Writes](key: String, values: Seq[T])(
-    implicit maxValues: Int = MaxValuesToWrite
+  def withKeyValues[T: Writes](key: String, values: Seq[T])(implicit
+    maxValues: Int = MaxValuesToWrite
   ): RollbarLogger = {
     val logger = values.take(maxValues).zipWithIndex.foldLeft(this) { case (l, pair) =>
       val value = pair._1
@@ -105,7 +104,8 @@ case class RollbarLogger @AssistedInject() (
     }
   }
 
-  def withKeyValues[T: Writes](key: String, values: NonEmptyChain[T]): RollbarLogger = withKeyValues(key, values.toNonEmptyList.toList)
+  def withKeyValues[T: Writes](key: String, values: NonEmptyChain[T]): RollbarLogger =
+    withKeyValues(key, values.toNonEmptyList.toList)
 
   def debug(message: => String): Unit = debug(message, null)
   def info(message: => String): Unit = info(message, null)

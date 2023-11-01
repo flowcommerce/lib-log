@@ -9,9 +9,9 @@ class LogUtil @Inject() (logger: RollbarLogger) {
 
   import RollbarLogger.Keys
 
-  /**
-    * @param frequency Log once per frequency. For instance, 100 means that the duration will be logged once every 100
-    *                  calls on average.
+  /** @param frequency
+    *   Log once per frequency. For instance, 100 means that the duration will be logged once every 100 calls on
+    *   average.
     */
   def duration[T](
     info: String,
@@ -22,7 +22,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     orderNumber: Option[String] = None,
     requestId: Option[String] = None,
     data: Option[Map[String, String]] = None,
-    frequency: Long = 1L,
+    frequency: Long = 1L
   )(f: => T): T = {
     if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()
@@ -47,9 +47,9 @@ class LogUtil @Inject() (logger: RollbarLogger) {
       f
   }
 
-  /**
-    * @param frequency Log once per frequency. For instance, 100 means that the duration will be logged once every 100
-    *                  calls on average.
+  /** @param frequency
+    *   Log once per frequency. For instance, 100 means that the duration will be logged once every 100 calls on
+    *   average.
     */
   def durationF[T](
     info: String,
@@ -60,7 +60,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     orderNumber: Option[String] = None,
     requestId: Option[String] = None,
     data: Option[Map[String, String]] = None,
-    frequency: Long = 1L,
+    frequency: Long = 1L
   )(f: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()

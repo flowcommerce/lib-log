@@ -27,9 +27,8 @@ class RollbarModule extends AbstractModule with ScalaModule {
   }
 }
 
-/**
-  * We use a provider because we don't want to keep initializing a new Rollbar notifier
-  * every time an instance of the logger is instantiated.
+/** We use a provider because we don't want to keep initializing a new Rollbar notifier every time an instance of the
+  * logger is instantiated.
   *
   * Returns an optional Rollbar instance so a key isn't required in test and development mode.
   */
@@ -52,7 +51,7 @@ class RollbarLoggerProvider @Inject() (
 // Necessary evil to allow us to copy instances of RollbarLogger, letting us have
 // nice methods like `withKeyValue`
 @Singleton
-class RollbarFactory @Inject()(
+class RollbarFactory @Inject() (
   rollbarProvider: Provider[Option[Rollbar]]
 ) extends RollbarLogger.Factory {
   @AssistedInject
@@ -132,9 +131,13 @@ object RollbarProvider {
 
         resultOpt match {
           case JsSuccess(res, _) => res
-          case JsError(errors) => new Result.Builder().code(-1).body(
-            JsError.toJson(errors).toString
-          ).build
+          case JsError(errors) =>
+            new Result.Builder()
+              .code(-1)
+              .body(
+                JsError.toJson(errors).toString
+              )
+              .build
         }
       }
     }

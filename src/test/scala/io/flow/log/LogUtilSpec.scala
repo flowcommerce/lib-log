@@ -21,7 +21,7 @@ class LogUtilSpec extends AnyWordSpec with Matchers {
         def f = {
           callCount.incrementAndGet()
         }
-        logUtil.duration(info = "test", fingerprint = "test", organizationId = "test")(f)
+        logUtil.duration(message = "test", fingerprint = "test", organizationId = "test")(f)
         callCount.get must be(1)
       }
     }
@@ -33,7 +33,7 @@ class LogUtilSpec extends AnyWordSpec with Matchers {
           callCount.incrementAndGet()
         }
         Await.result(
-          logUtil.durationF(info = "test", fingerprint = "test", organizationId = "test")(f),
+          logUtil.durationF(message = "test", fingerprint = "test", organizationId = "test")(f),
           10.millis
         )
         callCount.get must be(1)

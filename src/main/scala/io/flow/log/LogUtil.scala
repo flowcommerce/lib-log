@@ -14,7 +14,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     *   average.
     */
   def duration[T](
-    info: String,
+    message: String,
     fingerprint: String,
     organizationId: String,
     itemNumber: Option[String] = None,
@@ -22,7 +22,8 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     orderNumber: Option[String] = None,
     requestId: Option[String] = None,
     data: Option[Map[String, String]] = None,
-    frequency: Long = 1L
+    frequency: Long = 1L,
+    logLevel: RollbarLogger => (String => Unit) = logger => logger.info(_)
   )(f: => T): T = {
     if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()
@@ -31,17 +32,18 @@ class LogUtil @Inject() (logger: RollbarLogger) {
       } finally {
         val end = System.currentTimeMillis()
 
-        logger
-          .fingerprint(fingerprint)
-          .organization(organizationId)
-          .withKeyValue(Keys.RequestId, requestId)
-          .withKeyValue(Keys.ExperienceKey, experienceKey)
-          .withKeyValue(Keys.ItemNumber, itemNumber)
-          .withKeyValue(Keys.OrderNumber, orderNumber)
-          .withKeyValue("frequency", frequency)
-          .withKeyValue("data", data)
-          .withKeyValue("duration", end - start)
-          .info(info)
+        logLevel(
+          logger
+            .fingerprint(fingerprint)
+            .organization(organizationId)
+            .withKeyValue(Keys.RequestId, requestId)
+            .withKeyValue(Keys.ExperienceKey, experienceKey)
+            .withKeyValue(Keys.ItemNumber, itemNumber)
+            .withKeyValue(Keys.OrderNumber, orderNumber)
+            .withKeyValue("frequency", frequency)
+            .withKeyValue("data", data)
+            .withKeyValue("duration", end - start)
+        )(message)
       }
     } else
       f
@@ -52,7 +54,7 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     *   average.
     */
   def durationF[T](
-    info: String,
+    message: String,
     fingerprint: String,
     organizationId: String,
     itemNumber: Option[String] = None,
@@ -60,23 +62,25 @@ class LogUtil @Inject() (logger: RollbarLogger) {
     orderNumber: Option[String] = None,
     requestId: Option[String] = None,
     data: Option[Map[String, String]] = None,
-    frequency: Long = 1L
+    frequency: Long = 1L,
+    logLevel: RollbarLogger => (String => Unit) = logger => logger.info(_)
   )(f: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     if (shouldLog(frequency)) {
       val start = System.currentTimeMillis()
       f.andThen { _ =>
         val end = System.currentTimeMillis()
-        logger
-          .fingerprint(fingerprint)
-          .organization(organizationId)
-          .withKeyValue(Keys.RequestId, requestId)
-          .withKeyValue(Keys.ExperienceKey, experienceKey)
-          .withKeyValue(Keys.ItemNumber, itemNumber)
-          .withKeyValue(Keys.OrderNumber, orderNumber)
-          .withKeyValue("frequency", frequency)
-          .withKeyValue("data", data)
-          .withKeyValue("duration", end - start)
-          .info(info)
+        logLevel(
+          logger
+            .fingerprint(fingerprint)
+            .organization(organizationId)
+            .withKeyValue(Keys.RequestId, requestId)
+            .withKeyValue(Keys.ExperienceKey, experienceKey)
+            .withKeyValue(Keys.ItemNumber, itemNumber)
+            .withKeyValue(Keys.OrderNumber, orderNumber)
+            .withKeyValue("frequency", frequency)
+            .withKeyValue("data", data)
+            .withKeyValue("duration", end - start)
+        )(message)
       }
     } else
       f

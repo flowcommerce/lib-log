@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "5.1.0",
   "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test,
   "com.typesafe.play" %% "play-json" % "2.9.4",
   "com.typesafe.play" %% "play-json-joda" % "2.9.4"
 )

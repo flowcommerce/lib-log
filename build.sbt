@@ -2,7 +2,7 @@ name := "lib-log"
 
 organization := "io.flow"
 
-scalaVersion := "2.13.14"
+scalaVersion := "2.13.15"
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
 enablePlugins(GitVersioning)
@@ -27,7 +27,7 @@ lazy val allScalacOptions = Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.flow" %% s"lib-util" % "0.2.47",
+  "io.flow" %% s"lib-util" % "0.2.48",
   "com.rollbar" % "rollbar-java" % "1.10.3",
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "org.typelevel" %% "cats-core" % "2.10.0",

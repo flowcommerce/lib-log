@@ -3,12 +3,14 @@ package io.flow.log
 import cats.data.NonEmptyChain
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.rollbar.notifier.Rollbar
+import io.flow.util.FlowEnvironment
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
 
 import scala.jdk.CollectionConverters._
-import scala.util.Random
+import scala.util.control.NonFatal
+import scala.util.{Random, Try}
 
 object RollbarLogger {
 
@@ -16,6 +18,31 @@ object RollbarLogger {
     */
   val SimpleLogger: RollbarLogger =
     RollbarLogger(rollbar = None, attributes = Map.empty, legacyMessage = None, shouldSendToRollbar = false)
+
+  private def rollbarToken(): String = {
+    sys.env
+      .get("ROLLBAR_TOKEN")
+      .getOrElse {
+        sys.error("missing env variable: ROLLBAR_TOKEN")
+      }
+  }
+
+  lazy val Default: RollbarLogger = {
+    if (FlowEnvironment.Current == FlowEnvironment.Production) {
+      Try {
+        val rollbar = RollbarProvider.rollbar(rollbarToken())
+        RollbarLogger.SimpleLogger.copy(
+          rollbar = Some(rollbar),
+          shouldSendToRollbar = true
+        )
+      }.recover { case NonFatal(e) =>
+        Console.err.println(s"WARN Failed to load Rollbar logger, using simple logger: $e")
+        RollbarLogger.SimpleLogger
+      }.get
+    } else {
+      RollbarLogger.SimpleLogger
+    }
+  }
 
   trait Factory {
     @AssistedInject

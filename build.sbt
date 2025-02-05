@@ -1,5 +1,4 @@
-name := "lib-log"
-
+name := "lib-log-play29"
 organization := "io.flow"
 
 scalaVersion := "2.13.15"
@@ -32,12 +31,10 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % "4.2.3",
   "org.typelevel" %% "cats-core" % "2.10.0",
   "net.codingwell" %% "scala-guice" % "4.2.11",
-  "com.google.inject" % "guice" % "5.1.0",
-  "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.18" % Test,
-  "com.typesafe.play" %% "play-json" % "2.9.4",
-  "com.typesafe.play" %% "play-json-joda" % "2.9.4"
+  "com.typesafe.play" %% "play-json" % "2.10.6",
+  "com.typesafe.play" %% "play-json-joda" % "2.10.6",
 )
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"

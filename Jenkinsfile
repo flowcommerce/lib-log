@@ -10,7 +10,7 @@ def play29BranchExists() {
     ).trim() == "1"
 }
 
-def buildingOnPlay296Branch() = {
+def buildingOnPlay296Branch() {
     return (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
 }
 

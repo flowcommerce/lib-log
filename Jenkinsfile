@@ -44,7 +44,7 @@ pipeline {
                             git status
                             git merge origin/main --no-edit || echo "No changes to merge"
     
-                            if git rev-parse "origin/${targetBranch}" | grep -q $(git rev-parse HEAD); then
+                            if git rev-parse "origin/\${targetBranch}" | grep -q $(git rev-parse HEAD); then
                                 echo "No new changes merged, skipping push."
                             else
                                 echo "New changes merged, pushing to origin/${targetBranch}..."

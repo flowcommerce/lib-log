@@ -50,7 +50,12 @@ pipeline {
         }
 
         stage('Tag new version') {
-            when { branch 'main' }
+            when {
+                anyOf {
+                    branch 'main';
+                    branch 'play296'
+                }
+            }
             steps {
                 script {
                     VERSION = new flowSemver().calculateSemver()
@@ -61,24 +66,6 @@ pipeline {
 
         stage('Release') {
             when { branch 'main' }
-            steps {
-                container('play') {
-                    withCredentials([
-                            usernamePassword(
-                                    credentialsId: 'jenkins-x-jfrog',
-                                    usernameVariable: 'ARTIFACTORY_USERNAME',
-                                    passwordVariable: 'ARTIFACTORY_PASSWORD'
-                            )
-                    ]) {
-                        sh 'sbt clean +publish'
-                        syncDependencyLibrary()
-                    }
-                }
-            }
-        }
-
-        stage('Release play296') {
-            when { branch 'play296' }
             steps {
                 container('play') {
                     withCredentials([

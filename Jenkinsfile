@@ -38,8 +38,8 @@ pipeline {
                 script {
                     def targetBranch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
                     if (buildingOnPlay296Branch()) {
-                        echo "Branch play296 detected, merging out..."
-                        sh '''
+                        echo "Merging main into ${targetBranch}..."
+                        sh """
                             git fetch origin main
                             git status
                             git merge origin/main --no-edit || echo "No changes to merge"
@@ -51,7 +51,7 @@ pipeline {
                                 echo "New changes merged, pushing to origin/${targetBranch}..."
                                 git push origin ${targetBranch}
                             fi
-                        '''
+                        """
                     }
                 }
             }

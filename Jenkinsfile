@@ -65,7 +65,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'main';
-                    (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
+                    buildingOnPlay296Branch()
                 }
             }
             steps {

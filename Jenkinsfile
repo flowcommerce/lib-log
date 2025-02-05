@@ -10,6 +10,10 @@ def play29BranchExists() {
     ).trim() == "1"
 }
 
+def buildingOnPlay296Branch() = {
+    return (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
+}
+
 pipeline {
     agent {
         kubernetes {
@@ -32,7 +36,7 @@ pipeline {
             steps {
                 checkoutWithTags scm
                 script {
-                    if (env.BRANCH_NAME == 'play296') {
+                    if (buildingOnPlay296Branch()) {
                         echo "Branch play29 detected! Running specific steps..."
                         // Add steps specific to play29
                     } else {
@@ -61,7 +65,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'main';
-                    branch 'play296'
+                    (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
                 }
             }
             steps {

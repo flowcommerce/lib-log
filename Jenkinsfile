@@ -37,10 +37,11 @@ pipeline {
                 checkoutWithTags scm
                 script {
                     if (buildingOnPlay296Branch()) {
-                        echo "Branch play29 detected! Running specific steps..."
-                        // Add steps specific to play29
-                    } else {
-                        echo "This is branch ${env.BRANCH_NAME}, not play296."
+                        echo "Branch play296 detected, merging out..."
+                        sh '''
+                            git merge origin/main --no-edit
+                            git push origin play296
+                        '''
                     }
                 }
             }

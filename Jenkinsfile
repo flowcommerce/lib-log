@@ -1,3 +1,4 @@
+@Library('lib-jenkins-pipeline@<branch>') _
 
 def cts = []
 cts.push(containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java17-jammy', resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true))

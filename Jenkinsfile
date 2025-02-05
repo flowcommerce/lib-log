@@ -40,7 +40,7 @@ pipeline {
                         echo "Branch play296 detected, merging out..."
                         sh '''
                             git merge origin/main --no-edit
-                            git push origin play296
+                            git push
                         '''
                     }
                 }

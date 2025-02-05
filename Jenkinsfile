@@ -31,11 +31,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkoutWithTags scm
-                script {
-                    if (play29BranchExists) {
-                        echo "Play296 branch exists! Executing step..."
-                    }
-                }
             }
         }
 

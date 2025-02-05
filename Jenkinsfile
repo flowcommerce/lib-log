@@ -77,9 +77,11 @@ pipeline {
         }
 
         stage('Release') {
-            anyOf {
-                branch 'main';
-                expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
+            when {
+                anyOf {
+                    branch 'main';
+                    expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
+                }
             }
             steps {
                 container('play') {

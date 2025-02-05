@@ -28,7 +28,7 @@ lazy val allScalacOptions = Seq(
 libraryDependencies ++= Seq(
   guice % Provided,
   "io.flow" %% s"lib-util" % "0.2.50",
-  "com.rollbar" % "rollbar-java" % "2.0.0-alpha.1",
+  "com.rollbar" % "rollbar-java" % "2.0.0",
   "org.typelevel" %% "cats-core" % "2.10.0",
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo

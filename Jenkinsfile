@@ -39,19 +39,19 @@ pipeline {
                     def targetBranch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
                     if (buildingOnPlay296Branch()) {
                         echo "Merging main into ${targetBranch}..."
-                        sh """
+                        sh '''
                             git fetch origin main
                             git status
                             git merge origin/main --no-edit || echo "No changes to merge"
     
                             # Check if merge created new commits
-                            if git rev-parse origin/\${targetBranch} | grep -q $(git rev-parse HEAD); then
+                            if git rev-parse origin/'${targetBranch}' | grep -q $(git rev-parse HEAD); then
                                 echo "No new changes merged, skipping push."
                             else
-                                echo "New changes merged, pushing to origin/\${targetBranch}..."
-                                git push origin \${targetBranch}
+                                echo "New changes merged, pushing to origin/'${targetBranch}'..."
+                                git push origin '${targetBranch}'
                             fi
-                        """
+                        '''
                     }
                 }
             }

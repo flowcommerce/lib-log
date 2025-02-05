@@ -65,7 +65,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'main';
-                    buildingOnPlay296Branch()
+                    expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
                 }
             }
             steps {
@@ -77,7 +77,10 @@ pipeline {
         }
 
         stage('Release') {
-            when { branch 'main' }
+            anyOf {
+                branch 'main';
+                expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
+            }
             steps {
                 container('play') {
                     withCredentials([

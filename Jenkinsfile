@@ -1,4 +1,4 @@
-@Library('lib-jenkins-pipeline@efb282d89146e72b9744305571c56afc35792160') _
+@Library('lib-jenkins-pipeline@main') _
 
 def cts = []
 cts.push(containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java17-jammy', resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true))
@@ -72,7 +72,7 @@ pipeline {
             }
         }
 
-        stage('Release') {
+        stage('Release play296') {
             when { branch 'play296' }
             steps {
                 container('play') {

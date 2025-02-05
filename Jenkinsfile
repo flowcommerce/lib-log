@@ -5,7 +5,7 @@ cts.push(containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-
 
 def play29BranchExists() {
     return sh(
-            script: "git ls-remote --heads origin play29 | wc -l",
+            script: "git ls-remote --heads origin play296 | wc -l",
             returnStdout: true
     ).trim() == "1"
 }

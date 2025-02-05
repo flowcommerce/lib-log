@@ -3,7 +3,12 @@
 def cts = []
 cts.push(containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java17-jammy', resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true))
 
-def play29BranchExists = sh(script: "git ls-remote --heads origin play29 | wc -l", returnStdout: true).trim() == "1"
+def play29BranchExists() {
+    return sh(
+            script: "git ls-remote --heads origin play29 | wc -l",
+            returnStdout: true
+    ).trim() == "1"
+}
 
 pipeline {
     agent {

@@ -39,8 +39,15 @@ pipeline {
                     if (buildingOnPlay296Branch()) {
                         echo "Branch play296 detected, merging out..."
                         sh '''
-                            git merge origin/main --no-edit
-                            git push
+                            git merge origin/main --no-edit || echo "No changes to merge"
+    
+                            # Check if merge created new commits
+                            if git rev-parse origin/play296 | grep -q $(git rev-parse HEAD); then
+                                echo "No new changes merged, skipping push."
+                            else
+                                echo "New changes merged, pushing to origin/play296..."
+                                git push origin play296
+                            fi
                         '''
                     }
                 }

@@ -32,11 +32,11 @@ pipeline {
             steps {
                 checkoutWithTags scm
                 script {
-                    if (env.BRANCH_NAME == 'play29') {
+                    if (env.BRANCH_NAME == 'play296') {
                         echo "Branch play29 detected! Running specific steps..."
                         // Add steps specific to play29
                     } else {
-                        echo "This is branch ${env.BRANCH_NAME}, not play29."
+                        echo "This is branch ${env.BRANCH_NAME}, not play296."
                     }
                 }
             }

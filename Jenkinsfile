@@ -40,7 +40,8 @@ pipeline {
                         echo "Branch play296 detected, merging out..."
                         sh '''
                             git fetch origin main
-                            git checkout play29
+                            git status
+                            git checkout play296
                             git merge origin/main --no-edit || echo "No changes to merge"
     
                             # Check if merge created new commits

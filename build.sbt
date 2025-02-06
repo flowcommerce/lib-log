@@ -60,3 +60,11 @@ publishTo := {
 
 scalacOptions ++= allScalacOptions
 scalafmtOnCompile := true
+
+// Check if -Dversion is passed for the play296 branch ; otherwise, use the version from sbt-git.
+// Also determines where the lib will be published to (libs-release-local or libs-snapshot-local)
+git.gitTagToVersionNumber := { tag: String => sys.props.get("version") }
+ThisBuild / isSnapshot := {
+  if (sys.props.get("version").nonEmpty) false
+  else git.gitCurrentTags.value.isEmpty || git.gitUncommittedChanges.value
+}

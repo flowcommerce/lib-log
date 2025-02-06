@@ -83,7 +83,7 @@ pipeline {
                     ]) {
                         if (branchIsPlay29()) {
                             def version = sh(script: "git describe --tags --match \"[0-9]*.[0-9]*.[0-9]*\" | sed 's/-.*//'", returnStdout: true).trim()
-                            echo "Publishing version: ${version} of play296 library"
+                            echo "Publishing version ${version} of play296 library"
                             sh "sbt -Dversion=${version} clean +publish"
                         } else {
                             sh 'sbt clean +publish'

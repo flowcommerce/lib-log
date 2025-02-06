@@ -103,6 +103,7 @@ pipeline {
                                     passwordVariable: 'ARTIFACTORY_PASSWORD'
                             )
                     ]) {
+                        sh "git config --global --add safe.directory ${env.WORKSPACE}"
                         echo "Publishing version ${getLatestCleanVersion()} of play296 library"
                         sh "sbt -Dversion=${getLatestCleanVersion()} clean +publish"
                         syncDependencyLibrary()

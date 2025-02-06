@@ -14,6 +14,13 @@ def branchIsPlay29() {
     return (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
 }
 
+def getLatestCleanVersion() {
+    return sh(
+            script: "git describe --tags --match \"[0-9]*.[0-9]*.[0-9]*\" | sed 's/-.*//'",
+            returnStdout: true
+    ).trim()
+}
+
 pipeline {
     agent {
         kubernetes {
@@ -66,11 +73,26 @@ pipeline {
         }
 
         stage('Release') {
-            when {
-                anyOf {
-                    branch 'main';
-                    expression { branchIsPlay29() }
+            when { branch 'main' }
+            steps {
+                container('play') {
+                    withCredentials([
+                            usernamePassword(
+                                    credentialsId: 'jenkins-x-jfrog',
+                                    usernameVariable: 'ARTIFACTORY_USERNAME',
+                                    passwordVariable: 'ARTIFACTORY_PASSWORD'
+                            )
+                    ]) {
+                        sh 'sbt clean +publish'
+                        syncDependencyLibrary()
+                    }
                 }
+            }
+        }
+
+        stage('Release play296 version') {
+            when {
+                expression { branchIsPlay29() }
             }
             steps {
                 container('play') {
@@ -81,13 +103,8 @@ pipeline {
                                     passwordVariable: 'ARTIFACTORY_PASSWORD'
                             )
                     ]) {
-                        if (branchIsPlay29()) {
-                            def version = sh(script: "git describe --tags --match \"[0-9]*.[0-9]*.[0-9]*\" | sed 's/-.*//'", returnStdout: true).trim()
-                            echo "Publishing version ${version} of play296 library"
-                            sh "sbt -Dversion=${version} clean +publish"
-                        } else {
-                            sh 'sbt clean +publish'
-                        }
+                        echo "Publishing version ${getLatestCleanVersion()} of play296 library"
+                        sh "sbt -Dversion=${getLatestCleanVersion()} clean +publish"
                         syncDependencyLibrary()
                     }
                 }

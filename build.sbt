@@ -13,6 +13,13 @@ coverageFailOnMinimum := true
 coverageMinimumStmtTotal := 25
 coverageMinimumBranchTotal := 15
 
+// Check if -Dversion is passed for the play ; otherwise, use the version from sbt-git
+version in ThisBuild := sys.props.get("version")
+  .getOrElse(
+    // If no -Dversion, use sbt-git's computed version
+    (git.gitDescribeVersion).getOrElse("0.1.0-SNAPSHOT")
+  )
+
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",

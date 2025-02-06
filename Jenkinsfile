@@ -10,10 +10,6 @@ def play29BranchExists() {
     ).trim() == "1"
 }
 
-def buildingOnPlay296Branch() {
-    return (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
-}
-
 pipeline {
     agent {
         kubernetes {
@@ -35,23 +31,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkoutWithTags scm
-                script {
-                    if (buildingOnPlay296Branch()) {
-                        echo "Merging main into ${env.BRANCH_NAME}..."
-                        sh """
-                            git fetch origin main
-                            git status
-                            git merge origin/main --no-edit || echo "No changes to merge"
-    
-                            if git rev-parse origin/${env.BRANCH_NAME} | grep -q \$(git rev-parse HEAD); then
-                                echo "No new changes merged, skipping push."
-                            else
-                                echo "New changes merged, pushing to origin/${env.BRANCH_NAME}..."
-                                git push origin ${env.BRANCH_NAME}
-                            fi
-                        """
-                    }
-                }
             }
         }
 
@@ -72,10 +51,7 @@ pipeline {
 
         stage('Tag new version') {
             when {
-                anyOf {
-                    branch 'main';
-                    expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
-                }
+                branch 'main'
             }
             steps {
                 script {
@@ -104,6 +80,32 @@ pipeline {
                         sh 'sbt clean +publish'
                         syncDependencyLibrary()
                     }
+                }
+            }
+        }
+
+        stage("Update play296 branch") {
+            when {
+                allOf {
+                    branch 'main';
+                    expression { play29BranchExists() }
+                }
+            }
+            steps {
+                script {
+                    echo "Merging main into play296..."
+                    sh """
+                        git fetch origin main
+                        git checkout play296
+                        git merge origin/main -X ours --no-edit || echo "No changes to merge"
+                
+                        if git rev-parse origin/play296 | grep -q \$(git rev-parse HEAD); then
+                            echo "No new changes merged, skipping push."
+                        else
+                            echo "New changes merged, pushing to origin/play296..."
+                            git push origin play296
+                        fi
+                    """
                 }
             }
         }

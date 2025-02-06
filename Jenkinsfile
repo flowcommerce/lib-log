@@ -123,8 +123,7 @@ pipeline {
                 script {
                     echo "Merging main into play296..."
                     sh """
-                        git fetch origin main
-                        git fetch origin play296
+                        git fetch --all -v
                         git checkout play296
                         git merge origin/main -X ours --no-edit || echo "No changes to merge"
                 

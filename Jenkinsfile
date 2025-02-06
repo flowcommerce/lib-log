@@ -10,6 +10,10 @@ def play29BranchExists() {
     ).trim() == "1"
 }
 
+def branchIsPlay29() {
+    return (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296'
+}
+
 pipeline {
     agent {
         kubernetes {
@@ -65,7 +69,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'main';
-                    expression { (env.CHANGE_BRANCH ?: env.BRANCH_NAME) == 'play296' }
+                    expression { branchIsPlay29() }
                 }
             }
             steps {
@@ -77,7 +81,13 @@ pipeline {
                                     passwordVariable: 'ARTIFACTORY_PASSWORD'
                             )
                     ]) {
-                        sh 'sbt clean +publish'
+                        if (branchIsPlay29()) {
+                            def version = sh(script: "git describe --tags --match \"[0-9]*.[0-9]*.[0-9]*\" | sed 's/-.*//'", returnStdout: true).trim()
+                            echo "Publishing version: ${version} of play296 library"
+                            sh "sbt -Dversion=${version} clean +publish"
+                        } else {
+                            sh 'sbt clean +publish'
+                        }
                         syncDependencyLibrary()
                     }
                 }

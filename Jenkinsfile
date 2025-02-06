@@ -1,1 +1,1 @@
-skeletonLibraryPipeline()
+@Library('lib-jenkins-pipeline@play296') _

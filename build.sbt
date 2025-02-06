@@ -1,5 +1,5 @@
 name := "lib-log"
-// comment comment
+
 organization := "io.flow"
 
 scalaVersion := "2.13.15"

@@ -66,4 +66,3 @@ publishTo := {
 
 scalacOptions ++= allScalacOptions
 scalafmtOnCompile := true
-

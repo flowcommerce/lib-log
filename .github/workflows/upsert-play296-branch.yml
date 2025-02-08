@@ -1,0 +1,32 @@
+name: Upsert play296 branch
+
+on:
+  push:
+    branches: main
+
+jobs:
+  upsert-play296-branch:
+    runs-on: ubuntu-latest
+    name: Create play296 branch or rebase it to latest main
+    steps:
+      - name: Create play296 branch (if it does not exists)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+            gh api --silent \
+                /repos/${{ github.repository }}/git/refs \
+                -f ref="refs/heads/play296" \
+                -f sha="${{ github.sha}}" || \
+                echo 'play296 branch already exists on ${{ github.repository }}'
+      - name: Checkout play296 branch
+        uses: actions/checkout@v2
+        with:
+          ref: play296
+          fetch-depth: 0
+
+      - name: Rebase play296 branch to latest origin/main
+        run: |
+            git config user.email "tech@flow.io"
+            git config user.name "Flow Automation[bot]"
+            git rebase origin/main
+            git push -f -u origin play296

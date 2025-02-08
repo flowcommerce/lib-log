@@ -19,8 +19,9 @@ jobs:
                 -f sha="${{ github.sha}}" || \
                 echo 'play296 branch already exists on ${{ github.repository }}'
       - name: Checkout play296 branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
+          persist-credentials: false
           ref: play296
           fetch-depth: 0
 

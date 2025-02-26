@@ -1,5 +1,3 @@
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.20")
-
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.1")
 resolvers += "Flow Plugins" at "https://flow.jfrog.io/flow/plugins-release/"
 

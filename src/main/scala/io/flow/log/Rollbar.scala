@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
-import com.google.inject.{AbstractModule, Provider}
+import com.google.inject.{AbstractModule, Provider, TypeLiteral}
 import com.rollbar.api.payload.Payload
 import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
@@ -12,17 +12,16 @@ import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
 import io.flow.util.{Config, FlowEnvironment}
-import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json._
 import play.api.libs.json.jackson.PlayJsonMapperModule
 
 import javax.inject.{Inject, Singleton}
 
-class RollbarModule extends AbstractModule with ScalaModule {
+class RollbarModule extends AbstractModule {
   override def configure(): Unit = {
-    bind[Option[Rollbar]].toProvider[RollbarProvider]
+    bind(new TypeLiteral[Option[Rollbar]]() {}).toProvider(classOf[RollbarProvider])
     install(new FactoryModuleBuilder().build(classOf[RollbarLogger.Factory]))
-    bind[RollbarLogger].toProvider[RollbarLoggerProvider]
+    bind(classOf[RollbarLogger]).toProvider(classOf[RollbarLoggerProvider])
     ()
   }
 }

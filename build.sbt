@@ -33,6 +33,9 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "2.10.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+  "com.fasterxml.jackson.core" % "jackson-annotations" % "2.18.3",
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.18.3",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.18.3",
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % "2.18.3",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.18.3",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % "2.18.3",

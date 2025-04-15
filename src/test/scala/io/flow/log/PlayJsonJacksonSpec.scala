@@ -42,8 +42,8 @@ class PlayJsonJacksonSpec extends AnyWordSpec with Matchers {
             "str" -> "hello",
             "int" -> 42,
             "bool" -> true,
-            "missing" -> null
-          )
+            "missing" -> null,
+          ),
         )
 
         val bar = (json \ "foo").as[JsObject]
@@ -63,13 +63,13 @@ class PlayJsonJacksonSpec extends AnyWordSpec with Matchers {
           Json.obj(
             "str" -> JsString(foo.s),
             "int" -> JsNumber(foo.i),
-            "bool" -> JsBoolean(foo.b)
+            "bool" -> JsBoolean(foo.b),
           )
         }
 
         implicit val barWrites: Writes[Bar] = { bar =>
           Json.obj(
-            "foo" -> bar.f.fold(JsNull: JsValue)(Json.toJson)
+            "foo" -> bar.f.fold(JsNull: JsValue)(Json.toJson),
           )
         }
 

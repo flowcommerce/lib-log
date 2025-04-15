@@ -34,7 +34,7 @@ class LogUtilSpec extends AnyWordSpec with Matchers {
         }
         Await.result(
           logUtil.durationF(message = "test", fingerprint = "test", organizationId = "test")(f),
-          10.millis
+          10.millis,
         )
         callCount.get must be(1)
       }

@@ -33,7 +33,7 @@ class RollbarModule extends AbstractModule {
   */
 @Singleton
 class RollbarProvider @Inject() (
-  config: Config
+  config: Config,
 ) extends Provider[Option[Rollbar]] {
   override def get(): Option[Rollbar] = config.optionalString("rollbar.token").map(RollbarProvider.rollbar)
 }
@@ -41,7 +41,7 @@ class RollbarProvider @Inject() (
 // Allows RollbarLogger to be injected directly instead of creating one with the factory
 @Singleton
 class RollbarLoggerProvider @Inject() (
-  factory: RollbarFactory
+  factory: RollbarFactory,
 ) extends Provider[RollbarLogger] {
   private[this] lazy val logger = factory.rollbar()
   override def get(): RollbarLogger = logger
@@ -51,20 +51,20 @@ class RollbarLoggerProvider @Inject() (
 // nice methods like `withKeyValue`
 @Singleton
 class RollbarFactory @Inject() (
-  rollbarProvider: Provider[Option[Rollbar]]
+  rollbarProvider: Provider[Option[Rollbar]],
 ) extends RollbarLogger.Factory {
   @AssistedInject
   def rollbar(
     attributes: Map[String, JsValue] = Map.empty[String, JsValue],
     legacyMessage: Option[String] = None,
     shouldSendToRollbar: Boolean = true,
-    frequency: Long = 1L
+    frequency: Long = 1L,
   ): RollbarLogger = RollbarLogger(
     rollbarProvider.get(),
     attributes,
     legacyMessage,
     shouldSendToRollbar,
-    frequency
+    frequency,
   )
 }
 
@@ -73,7 +73,7 @@ object RollbarProvider {
   def logger(
     token: String,
     attributes: Map[String, JsValue] = Map.empty[String, JsValue],
-    legacyMessage: Option[String] = None
+    legacyMessage: Option[String] = None,
   ): RollbarLogger = {
     val rb = Some(rollbar(token))
     RollbarLogger(rb, attributes, legacyMessage)
@@ -108,7 +108,7 @@ object RollbarProvider {
           classOf[com.rollbar.api.json.JsonSerializable],
           (value: com.rollbar.api.json.JsonSerializable, gen: JsonGenerator, serializers: SerializerProvider) => {
             serializers.defaultSerializeValue(value.asJson(), gen)
-          }
+          },
         )
       })
 
@@ -134,7 +134,7 @@ object RollbarProvider {
             new Result.Builder()
               .code(-1)
               .body(
-                JsError.toJson(errors).toString
+                JsError.toJson(errors).toString,
               )
               .build
         }

@@ -33,7 +33,7 @@ object RollbarLogger {
         val rollbar = RollbarProvider.rollbar(rollbarToken())
         RollbarLogger.SimpleLogger.copy(
           rollbar = Some(rollbar),
-          shouldSendToRollbar = true
+          shouldSendToRollbar = true,
         )
       }.recover { case NonFatal(e) =>
         Console.err.println(s"WARN Failed to load Rollbar logger, using simple logger: $e")
@@ -50,7 +50,7 @@ object RollbarLogger {
       attributes: Map[String, JsValue],
       legacyMessage: Option[String],
       shouldSendToRollbar: Boolean,
-      frequency: Long
+      frequency: Long,
     ): RollbarLogger
   }
 
@@ -73,7 +73,7 @@ case class RollbarLogger @AssistedInject() (
   @Assisted attributes: Map[String, JsValue],
   @Assisted legacyMessage: Option[String],
   @Assisted shouldSendToRollbar: Boolean = true,
-  @Assisted frequency: Long = 1L
+  @Assisted frequency: Long = 1L,
 ) {
 
   private[this] val MaxValuesToWrite = 10
@@ -116,7 +116,7 @@ case class RollbarLogger @AssistedInject() (
     *   - error_2: bar
     */
   def withKeyValues[T: Writes](key: String, values: Seq[T])(implicit
-    maxValues: Int = MaxValuesToWrite
+    maxValues: Int = MaxValuesToWrite,
   ): RollbarLogger = {
     val logger = values.take(maxValues).zipWithIndex.foldLeft(this) { case (l, pair) =>
       val value = pair._1

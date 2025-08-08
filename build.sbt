@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % "7.0.0" % Provided,
   "io.flow" %% s"lib-util" % "0.2.58",
   "com.rollbar" % "rollbar-java" % "2.0.0",
-  "org.typelevel" %% "cats-core" % "2.10.0",
+  "org.typelevel" %% "cats-core" % "2.13.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.6", // structured logging to sumo
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.19.2",

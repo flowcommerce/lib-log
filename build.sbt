@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "com.rollbar" % "rollbar-java" % "2.0.0",
   "org.typelevel" %% "cats-core" % "2.10.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.6", // structured logging to sumo
-  "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.19.2",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.19.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.19.2",

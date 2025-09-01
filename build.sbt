@@ -37,7 +37,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.20.0",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.20.0",
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % "2.20.0",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.19.2",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.20.0",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % "2.19.2",
   "com.fasterxml.jackson.module" % "jackson-module-parameter-names" % "2.19.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.19.2",

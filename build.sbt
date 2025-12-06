@@ -41,8 +41,8 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % "2.19.2",
   "com.fasterxml.jackson.module" % "jackson-module-parameter-names" % "2.19.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.19.2",
-  "com.typesafe.play" %% "play-json" % "2.10.6",
-  "com.typesafe.play" %% "play-json-joda" % "2.10.6",
+  "com.typesafe.play" %% "play-json" % "2.10.8",
+  "com.typesafe.play" %% "play-json-joda" % "2.10.8",
 )
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"

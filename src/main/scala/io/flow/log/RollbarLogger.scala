@@ -8,6 +8,8 @@ import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
 
+import java.util.concurrent.atomic.AtomicLong
+import scala.concurrent.duration.FiniteDuration
 import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
 import scala.util.{Random, Try}
@@ -74,6 +76,7 @@ case class RollbarLogger @AssistedInject() (
   @Assisted legacyMessage: Option[String],
   @Assisted shouldSendToRollbar: Boolean = true,
   @Assisted frequency: Long = 1L,
+  interval: Option[(FiniteDuration, AtomicLong)] = None,
 ) {
 
   private[this] val MaxValuesToWrite = 10
@@ -85,6 +88,12 @@ case class RollbarLogger @AssistedInject() (
   /** Log once per frequency. For instance, 100 means that the message will be logged once every 100 calls on average.
     */
   def withFrequency(frequency: Long): RollbarLogger = this.copy(frequency = frequency)
+
+  /** Throttle logging to at most once per the given duration. Thread-safe via compare-and-set. The throttle state is
+    * shared across .copy() calls, so chained builder methods preserve it.
+    */
+  def atMostEvery(d: FiniteDuration): RollbarLogger =
+    this.copy(interval = Some((d, new AtomicLong(0L))))
 
   def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger =
@@ -167,7 +176,16 @@ case class RollbarLogger @AssistedInject() (
         rollbar.foreach(_.error(error, convert(attributes), message))
     }
 
-  private def shouldLog: Boolean =
-    frequency == 1L || (Random.nextInt() % frequency == 0)
+  private[log] def shouldLog: Boolean = {
+    val frequencyCheck = frequency == 1L || (Random.nextInt() % frequency == 0)
+    val timeThrottleCheck = interval match {
+      case Some((minInterval, lastLoggedAt)) =>
+        val now = System.currentTimeMillis()
+        val last = lastLoggedAt.get()
+        now - last >= minInterval.toMillis && lastLoggedAt.compareAndSet(last, now)
+      case None => true
+    }
+    frequencyCheck && timeThrottleCheck
+  }
 
 }

@@ -178,12 +178,12 @@ case class RollbarLogger @AssistedInject() (
 
   private[log] def shouldLog: Boolean = {
     val frequencyCheck = frequency == 1L || (Random.nextInt() % frequency == 0)
-    val timeThrottleCheck = interval match {
-      case Some((minInterval, lastLoggedAt)) =>
+    val timeThrottleCheck = (interval, frequencyCheck) match {
+      case (Some((minInterval, lastLoggedAt)), true) =>
         val now = System.currentTimeMillis()
         val last = lastLoggedAt.get()
         now - last >= minInterval.toMillis && lastLoggedAt.compareAndSet(last, now)
-      case None => true
+      case _ => true
     }
     frequencyCheck && timeThrottleCheck
   }

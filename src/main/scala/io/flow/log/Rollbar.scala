@@ -3,8 +3,11 @@ package io.flow.log
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializerProvider}
+import java.util.concurrent.atomic.AtomicLong
 import com.google.inject.assistedinject.{AssistedInject, FactoryModuleBuilder}
 import com.google.inject.{AbstractModule, Provider, TypeLiteral}
+
+import scala.concurrent.duration.FiniteDuration
 import com.rollbar.api.payload.Payload
 import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
@@ -20,6 +23,7 @@ import javax.inject.{Inject, Singleton}
 class RollbarModule extends AbstractModule {
   override def configure(): Unit = {
     bind(new TypeLiteral[Option[Rollbar]]() {}).toProvider(classOf[RollbarProvider])
+    bind(new TypeLiteral[Option[(FiniteDuration, AtomicLong)]]() {}).toInstance(None)
     install(new FactoryModuleBuilder().build(classOf[RollbarLogger.Factory]))
     bind(classOf[RollbarLogger]).toProvider(classOf[RollbarLoggerProvider])
     ()
